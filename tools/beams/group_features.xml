@@ -1,0 +1,25 @@
+<tool id="beams_group_features" name="Group features" version="0.1.0">
+    <description></description>
+    <macros>
+        <import>macros.xml</import>
+    </macros>
+    <expand macro="requirements" />
+    <expand macro="stdio" />
+    <command><![CDATA[
+    ]]></command>
+    
+    <inputs>
+    </inputs>
+
+    <outputs>
+    </outputs>
+    
+    <tests>
+        <test>
+        </test>
+    </tests>
+    <help>
+    </help>
+    <expand macro="citations" />
+</tool>
+

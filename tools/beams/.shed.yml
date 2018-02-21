@@ -1,0 +1,24 @@
+categories: [Metabolomics]
+description: "[Metabolomics][LC-MS][DIMS] BEAMS: "
+long_description: |
+  DIMSpy: Tools for processing, filtering and analysing direct-infusion mass spectrometry-based metabolomics and lipidomics data"
+
+  Repository-Maintainer: 
+
+  https://github.com/computational-metabolomics/beams
+name: beams
+owner: rjmweber
+remote_repository_url: https://github.com/computational-metabolomics/beams-galaxy
+type: unrestricted
+auto_tool_repositories:
+  name_template: "{{ tool_id }}"
+  description_template: "[Metabolomics][LC-MS][DIMS] BEAMS - {{ tool_name }}: {{ description }}"
+suite:
+  name: "suite_dimspy"
+  description: "BEAMS: "
+  long_description: |
+    BEAMS: "
+
+    Repository-Maintainer: 
+
+    https://github.com/computational-metabolomics/beams
