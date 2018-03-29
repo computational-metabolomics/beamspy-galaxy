@@ -1,0 +1,133 @@
+<tool id="beams_annotation" name="Beams Annotation" version="0.1.0">
+    <description></description>
+    <macros>
+        <import>macros.xml</import>
+    </macros>
+    <expand macro="requirements" />
+    <command><![CDATA[
+
+        #if $adv.performFeaturesGrouping.groupFeaturesCheck == 'true' 
+            python -m beams group-features --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --gml '$output_graph' --db '$result_sqlite' --max-rt-diff '$adv.performFeaturesGrouping.maxRetentionTimeDifference' --method '$adv.performFeaturesGrouping.groupingMethod' --coeff-threshold '$adv.performFeaturesGrouping.coefficientThreshold' --pvalue-threshold '$adv.performFeaturesGrouping.pValueThreshold';
+        #end if
+
+        #if $adv.performPeakPatternsAnnotation.peakPatternsAnnotationCheck == 'true'
+            #if $adv.performPeakPatternsAnnotation.adducts.useAdductsLibrary == 'true' and $adv.performPeakPatternsAnnotation.isotopes.useIsotopesLibrary == 'true'
+                python -m beams annotate-peak-patterns --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --gml '$output_graph' --db '$result_sqlite' --adducts --adducts-library '$adv.performPeakPatternsAnnotation.adducts.adductsLibrary' --isotopes --isotopes-library '$adv.performPeakPatternsAnnotation.isotopes.isotopesLibrary' --ion-mode '$adv.performPeakPatternsAnnotation.ionMode' --ppm '$adv.performPeakPatternsAnnotation.ppm';
+            #elif $adv.performPeakPatternsAnnotation.adducts.useAdductsLibrary == 'true' and $adv.performPeakPatternsAnnotation.isotopes.useIsotopesLibrary == 'false'
+                python -m beams annotate-peak-patterns --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --gml '$output_graph' --db '$result_sqlite' --adducts --adducts-library '$adv.performPeakPatternsAnnotation.adducts.adductsLibrary' --ion-mode '$adv.performPeakPatternsAnnotation.ionMode' --ppm '$adv.performPeakPatternsAnnotation.ppm';
+            #elif $adv.performPeakPatternsAnnotation.isotopes.useIsotopesLibrary == 'false' and $adv.performPeakPatternsAnnotation.isotopes.useIsotopesLibrary == 'true'
+                 python -m beams annotate-peak-patterns --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --gml '$output_graph' --db '$result_sqlite' --isotopes --isotopes-library '$adv.performPeakPatternsAnnotation.isotopes.isotopesLibrary' --ion-mode '$adv.performPeakPatternsAnnotation.ionMode' --ppm '$adv.performPeakPatternsAnnotation.ppm';
+            #else
+                python -m beams annotate-peak-patterns --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --gml '$output_graph' --db '$result_sqlite' --ion-mode '$adv.performPeakPatternsAnnotation.ionMode' --ppm '$adv.performPeakPatternsAnnotation.ppm';
+            #end if
+        #end if
+
+        #if $adv.performMolecularFormulaeAnnotation.molecularFormulaeAnnotationCheck == 'true'
+            #if $adv.performPeakPatternsAnnotation.adducts.useAdductsLibrary == 'true'
+                python -m beams annotate-mf --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --db '$result_sqlite' --adducts-library '$adv.performPeakPatternsAnnotation.adducts.adductsLibrary' --db-mf '$adv.performMolecularFormulaeAnnotation.mfLibrary' --ion-mode '$adv.performMolecularFormulaeAnnotation.ionMode' --ppm '$adv.performMolecularFormulaeAnnotation.ppm';
+            #else
+                python -m beams annotate-mf --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --db '$result_sqlite' --db-mf '$adv.performMolecularFormulaeAnnotation.mfLibrary' --ion-mode '$adv.performMolecularFormulaeAnnotation.ionMode' --ppm '$adv.performMolecularFormulaeAnnotation.ppm';
+            #end if
+        #end if 
+
+        #if $adv.performCompoundsAnnotation.compoundsAnnotationCheck == 'true'
+            #if $adv.performPeakPatternsAnnotation.adducts.useAdductsLibrary == 'true'
+                python -m beams annotate-compounds --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --db '$result_sqlite' --adducts-library '$adv.performPeakPatternsAnnotation.adducts.adductsLibrary' --db-compounds '$adv.performCompoundsAnnotation.compoundsLibrary' --ion-mode '$adv.performCompoundsAnnotation.ionMode' --ppm '$adv.performCompoundsAnnotation.ppm' --db-name '$adv.performCompoundsAnnotation.dbName';
+            #else
+                python -m beams annotate-compounds --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --db '$result_sqlite' --db-compounds '$adv.performCompoundsAnnotation.compoundsLibrary' --ion-mode '$adv.performCompoundsAnnotation.ionMode' --ppm '$adv.performCompoundsAnnotation.ppm' --db-name '$adv.performCompoundsAnnotation.dbName';
+            #end if
+        #end if
+
+        python -m beams summary-results --peaklist '$peakList' --intensity-matrix '$intensityMatrix' --db '$result_sqlite' --output '$outputSummary' --sep '$adv.results.delimitor';
+
+    ]]></command>
+    <inputs>
+        <param name="peakList" value="" type="data" format="txt" label="Peak list data" help="">
+        </param>
+        <param name="intensityMatrix" value="" type="data" format="txt" label="Intensity matrix data" help="">
+        </param>
+        <section name="adv" title="Advanced options" expanded="True">
+            <conditional name="performFeaturesGrouping">
+                <param name="groupFeaturesCheck" type="boolean" checked="true" label="Group Features" help="" truevalue="true" falsevalue="false" />
+                <when value="true">
+                    <param name="maxRetentionTimeDifference" value="5.0" type="text" label="Maximum Retention Time Difference" help="">
+                    </param>
+                    <param name="groupingMethod" type="select" label="Choose the grouping method">
+                        <option value="pearson" selected="True">Pearson</option>
+                    </param>
+                    <param name="coefficientThreshold" value="0.7" type="text" label="Coefficient Threshold" help="">
+                    </param>
+                    <param name="pValueThreshold" value="0.01" type="text" label="p Value Threshold" help="">
+                    </param>
+                </when>
+            </conditional>
+            <conditional name="performPeakPatternsAnnotation">
+                <param name="peakPatternsAnnotationCheck" type="boolean" checked="false" label="Annotate Peak Patterns" help="" truevalue="true" falsevalue="false" />
+                <when value="true">
+                    <conditional name="adducts">
+                        <param name="useAdductsLibrary" type="boolean" checked="false" label="" help="" truevalue="true" falsevalue="false" />
+                        <when value="true">
+                           <param name="adductsLibrary" type="data" format="txt" label="Adducts library" help=""></param>
+                        </when>
+                    </conditional>
+                    <conditional name="isotopes">
+                        <param name="useIsotopesLibrary" type="boolean" checked="false" label="" help="" truevalue="true" falsevalue="false" />
+                        <when value="true">
+                           <param name="isotopesLibrary" type="data" format="txt" label="Isotopes library" help="">
+                            </param>
+                        </when>
+                    </conditional>
+                    <param name="ionMode" type="select" label="Ion mode">
+                        <option value="pos" selected="True">pos</option>
+                    </param>
+                    <param name="ppm" value="5.0" type="text" label="PPM" help="">
+                    </param>
+                </when>
+            </conditional>
+            <conditional name="performMolecularFormulaeAnnotation">
+                <param name="molecularFormulaeAnnotationCheck" type="boolean" checked="false" label="" help="" truevalue="true" falsevalue="false" />
+                <when value="true">
+                    <param name="mfLibrary" type="data" format="txt" label="Molecular formulae library" help="">
+                    </param>
+                    <param name="ionMode" type="select" label="Ion mode">
+                        <option value="pos" selected="True">pos</option>
+                    </param>
+                    <param name="ppm" value="5.0" type="text" label="PPM" help="">
+                    </param>
+                </when>
+            </conditional>
+            <conditional name="performCompoundsAnnotation">
+                <param name="compoundsAnnotationCheck" type="boolean" checked="false" label="" help="" truevalue="true" falsevalue="false" />
+                <when value="true">
+                    <param name="compoundsLibrary" type="data" format="txt,sqlite" label="Compounds library" help="">
+                    </param>
+                    <param name="ionMode" type="select" label="Ion mode">
+                        <option value="pos" selected="True">pos</option>
+                    </param>
+                    <param name="dbName" type="select" label="Database">
+                        <option value="HMDB" selected="True">HMDB</option>
+                    </param>
+                    <param name="ppm" value="5.0" type="text" label="PPM" help="">
+                    </param>
+                </when>
+            </conditional>
+            <section name="results" title="Results Summary" expanded="True">
+                <param name="delimitor" type="select" label="Choose the delimitor">
+                    <option value="tab" selected="True">Tab delimited</option>
+                </param>
+            </section>
+        </section>
+    </inputs>
+    <outputs>
+        <data name="output_graph" format="gml" label="graph" />
+        <data name="result_sqlite" format="sqlite" label="sqlite" />
+        <data name="outputSummary" format="tsv" label="Summary File" />
+    </outputs>
+    <tests>
+        <test>
+        </test>
+    </tests>
+    <help>
+    </help>
+    <expand macro="citations" />
+</tool>
