@@ -125,6 +125,20 @@
     </outputs>
     <tests>
         <test>
+            <param name="peakList" value="variableMetadata.txt"/>
+            <param name="intensityMatrix" value="dataMatrix.txt"/>
+            <param name="maxRetentionTimeDifference" value="5.0"/>
+            <param name="groupingMethod" value="Pearson"/>
+            <param name="coefficientThreshold" value="0.7"/>
+            <param name="pValueThreshold" value="0.01"/>
+            <param name="peakPatternsAnnotationCheck" value="true" />
+            <param name="useAdductsLibrary" value="true" />
+            <param name="useIsotopesLibrary" value="true" />
+            <param name="adductsLibrary" value="adducts.txt" />
+            <param name="isotopesLibrary" value="isotopes.txt" />
+            <output name="outputSummary" file="summary.tsv" />
+            <output name="output_graph" file="output_graph.gml" />
+            <output name="result_sqlite" file="output_db.sqlite" />
         </test>
     </tests>
     <help>
