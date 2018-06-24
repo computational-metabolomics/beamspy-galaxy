@@ -11,7 +11,32 @@ Galaxy
 
 Developers & Contributors
 -------------------------
- 
+
+#### Create local BEAMS Conda package
+`> git clone https://github.com/computational-metabolomics/beams.git`<br>
+#### Add metadata.yaml and build.sh files to the project - links [meta.yaml](https://gist.github.com/CS76/f717719033985400bbd5389fda7aeec8#file-beams-meta-yaml) and [build.sh](https://gist.github.com/CS76/f717719033985400bbd5389fda7aeec8#file-beams-build-sh)
+`> conda build beams`<br>
+##### On mac you need to run this with write permissions
+`> sudo conda build beams`<br>
+
+This will build the conda package and add it to your local conda build directory (we will need this CONDA_BLD_PATH full path later. On mac its usually `/users/<username>/miniconda3/conda-bld`)
+
+#### Clone BEAMS-Galaxy wrapper tool and run galaxy using palanemo
+##### Clone BEAMS-Galaxy wrapper tool from github
+`> git clone https://github.com/computational-metabolomics/beams-galaxy`<br>
+`> git checkout development # if branch doesnt exist ~ git fetch development`<br>
+`> cd <beams-galaxy_project_location>/tools/beams`<br>
+
+##### If you don't have planemo setup
+
+`> virtualenv .venv; . .venv/bin/activate` <br> 
+`> pip install "pip>=7" # Upgrade pip if needed.`<br>
+`> pip install planemo`
+
+##### Start galaxy server - Planemo (specify the galaxy server location and the conda channels for it to recognise the beams package) <br>
+`> planemo serve --galaxy_root=<galaxy_server_location> --conda_exec=<conda_executable_location> --conda_channels=<conda_packages_location>,conda-forge`<br>
+
+conda needs other dependencise so you have to add conda-forge to the conda-channels list
 
 Bugs
 ----
