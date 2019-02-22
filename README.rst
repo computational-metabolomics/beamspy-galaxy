@@ -11,7 +11,8 @@ Galaxy
 
 Developers & Contributors
 -------------------------
- 
+`Install instructions <https://gist.github.com/CS76/59b5b69fe76d20c71b5a54f13e0bc943>`_.
+
 
 Bugs
 ----
