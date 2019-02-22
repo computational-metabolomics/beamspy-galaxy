@@ -382,6 +382,50 @@
         </test>
     </tests>
     <help>
+BEAMS - Birmingham mEtabolite Annotation for Mass SpectroMetry
+===============================================================
+
+..
+
+----------------
+
+Description
+-----------
+
+|
+
+-----------------
+
+
+Parameters
+----------
+
+|
+
+----------------------------------
+
+
+Output file(s)
+--------------
+
+|
+
+-----------------------------------
+
+
+Github respository (source code)
+--------------------------------
+
+https://github.com/computational-metabolomics/beams/
+
+Developers and contributors
+---------------------------
+
+- **Ralf Weber (r.j.weber@bham.ac.uk) - University of Birmingham (UK)**
+- **Venkata Chandrasekhar Nainala (venkata@ebi.ac.uk) - The European Bioinformatics Institute (UK)**
+
+|
+
     </help>
     <citations>
     </citations>
