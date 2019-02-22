@@ -1,253 +1,388 @@
-<tool id="beams_annotation" name="Beams - Birmingham mEtabolite Annotation for Mass SpectroMetry" version="0.1.0">
-    <description></description>
-    <macros>
-        <import>macros.xml</import>
-    </macros>
-    <expand macro="requirements" />
-    <command><![CDATA[
-        #if $advancedOptions.groupFeaturesCheck.groupFeatures == 'true' 
+<tool id="beams" name="BEAMS" version="0.1.0">
+    <description> - Birmingham mEtabolite Annotation for Mass SpectroMetry</description>
+    <requirements>
+        <requirement type="package" version="0.1.0">beams</requirement>
+    </requirements>
+    <code file="get_databases.py" />
+    <command detect_errors="exit_code"><![CDATA[
+        echo ""
+        #if $group_features.condi.flag == "true"
+            &&
             python -m beams group-features
-                --peaklist '$peakList' 
-                --intensity-matrix '$intensityMatrix' 
-                --gml '$output_graph' 
-                --db '$result_sqlite' 
-                --max-rt-diff '$advancedOptions.groupFeaturesCheck.maxRTDifference' 
-                --method '$advancedOptions.groupFeaturesCheck.groupingMethod' 
-                --coeff-threshold '$advancedOptions.groupFeaturesCheck.coefficientThreshold' 
-                --pvalue-threshold '$advancedOptions.groupFeaturesCheck.pValueThreshold';
+                --peaklist "$peaklist"
+                --intensity-matrix "$group_features.condi.intensity_matrix" 
+                --gml-file "$output_graph" 
+                --db "$output_sqlite" 
+                --max-rt-diff $group_features.condi.max_rt_diff
+                --method $group_features.condi.grouping_method
+                --coeff-threshold $group_features.condi.coefficient_threshold
+                --pvalue-threshold $group_features.condi.pvalue_threshold
+                --ncpus \${GALAXY_SLOTS:-4}
         #end if
 
-        #if $advancedOptions.peakPatternsAnnotationCheck.annotatePeakPatterns == 'true' 
+        #if $annotate_peak_patterns.condi.flag == "true" 
+            &&
             python -m beams annotate-peak-patterns
-                --peaklist '$peakList' 
-                --intensity-matrix '$intensityMatrix' 
-                --gml '$output_graph' 
-                --db '$result_sqlite'
-                #if $advancedOptions.peakPatternsAnnotationCheck.adductsCheck.useAdductsLibrary == 'true'
-                    --adducts 
-                    --adducts-library '$advancedOptions.peakPatternsAnnotationCheck.adductsCheck.adductsLibrary'
+                --peaklist "$peaklist"
+                #if $intensity_matrix
+                    --intensity-matrix "$intensity_matrix" 
                 #end if
-                #if $advancedOptions.peakPatternsAnnotationCheck.isotopesCheck.useIsotopesLibrary == 'true'
-                    --isotopes 
-                    --isotopes-library '$advancedOptions.peakPatternsAnnotationCheck.isotopesCheck.isotopesLibrary'
+                #if $group_features.condi.flag == "true"
+                    --gml-file "$output_graph"
                 #end if
-                #if $advancedOptions.peakPatternsAnnotationCheck.multipleChargedIonsCheck.useMultipleChargedIons == 'true'
+                --db "$output_sqlite"
+                --ion-mode $ion_mode
+                --ppm $annotate_peak_patterns.condi.ppm
+                #if $annotate_peak_patterns.condi.adducts_condi.flag == "true"
+                    --adducts
+                    #if $annotate_peak_patterns.condi.adducts_condi.library
+                        --adducts-library "$annotate_peak_patterns.condi.adducts_condi.library"
+                    #end if
+                #end if
+                #if $annotate_peak_patterns.condi.isotopes_condi.flag == "true"
+                    --isotopes
+                    #if $annotate_peak_patterns.condi.isotopes_condi.library
+                        --isotopes-library "$annotate_peak_patterns.condi.isotopes_condi.library"
+                    #end if
+                #end if
+                #if $annotate_peak_patterns.condi.multiple_charged_ions_condi.flag == "true"
                     --multiple-charged-ions
-                    --multiple-charged-ions-library '$advancedOptions.peakPatternsAnnotationCheck.multipleChargedIonsCheck.multipleChargedIonsLibrary'
+                    #if $annotate_peak_patterns.condi.multiple_charged_ions_condi.library
+                        --multiple-charged-ions-library "$annotate_peak_patterns.condi.multiple_charged_ions_condi.library"
+                    #end if
                 #end if
-                #if $advancedOptions.peakPatternsAnnotationCheck.oligomersCheck.annotateOligomers == 'true'
+                #if $annotate_peak_patterns.condi.oligomers_condi.flag == "true"
                     --oligomers
+                    --max_monomer_units $max_monomer_units
                 #end if
-                --ion-mode '$ionMode' 
-                --ppm '$massTolerance';
         #end if
 
-        #if $advancedOptions.molecularFormulaeAnnotationCheck.annotateMolecularFormulae == 'true' 
+        #if $annotate_molecular_formulae.condi.flag == "true"
+            &&
             python -m beams annotate-mf
-                --peaklist '$peakList' 
-                --intensity-matrix '$intensityMatrix' 
-                --db '$result_sqlite'
-                #if $advancedOptions.molecularFormulaeAnnotationCheck.sourceCheck.selectedSource == 'url'
-                    --db-mf 'http://multiomics-int.cs.bham.ac.uk'
-                    --max-mz '$advancedOptions.molecularFormulaeAnnotationCheck.sourceCheck.maxMZ'
+                --peaklist "$peaklist" 
+                #if $intensity_matrix
+                    --intensity-matrix "$intensity_matrix" 
                 #end if
-                #if $advancedOptions.molecularFormulaeAnnotationCheck.sourceCheck.selectedSource == 'file'
-                    --db-mf '$advancedOptions.molecularFormulaeAnnotationCheck.sourceCheck.referenceFile'
+                --db "$output_sqlite"
+                #if $annotate_molecular_formulae.condi.condi.source == "url"
+                    --db-mf "http://multiomics-int.cs.bham.ac.uk"
+                    $annotate_molecular_formulae.condi.condi.heuristic_rules
+                    --max-mz $annotate_molecular_formulae.condi.condi.max_mz
                 #end if
-                --adducts-library '$adductLibrary'
-                --ion-mode '$ionMode' 
-                --ppm '$massTolerance';
+                #if $annotate_molecular_formulae.condi.condi.source == "file"
+                    --db-mf "$annotate_molecular_formulae.condi.condi.reference_file"
+                #end if
+                --ion-mode $ion_mode
+                --ppm $annotate_molecular_formulae.condi.ppm
+                #if $adducts_library
+                    --adducts-library "$adducts_library"
+                #end if
         #end if
 
-        #if $advancedOptions.compoundsAnnotationCheck.annotateCompounds == 'true' 
+        #if $annotate_compounds.condi.flag == "true"
+            &&
             python -m beams annotate-compounds
-                --peaklist '$peakList' 
-                --intensity-matrix '$intensityMatrix' 
-                --db '$result_sqlite'
-                #if $advancedOptions.compoundsAnnotationCheck.referenceFileCheck.useReferenceFile == 'true'
-                    --db-compounds '$advancedOptions.compoundsAnnotationCheck.referenceFileCheck.referenceFile'
+                --peaklist "$peaklist" 
+                #if $intensity_matrix
+                    --intensity-matrix "$intensity_matrix" 
                 #end if
-                #if $advancedOptions.compoundsAnnotationCheck.referenceFileCheck.useReferenceFile == 'false'
-                    --db-compounds '$advancedOptions.compoundsAnnotationCheck.referenceFileCheck.referenceFile'
+                --db "$output_sqlite"
+                #if $annotate_compounds.condi.condi.source == "databases"
+                    --db-name "$annotate_compounds.condi.condi.db_name"
                 #end if
-                --adducts-library '$adductLibrary'
-                --ion-mode '$ionMode' 
-                --ppm '$massTolerance';
-        #end if
+                #if $annotate_compounds.condi.condi.source == "file"
+                    --db-compounds "$annotate_compounds.condi.condi.reference_file"
+                    --db-name "reference_file"
+                #end if
+                --ion-mode $ion_mode
+                --ppm $annotate_compounds.condi.ppm
+                #if $adducts_library
+                    --adducts-library $adducts_library
+                #end if
 
-        #if $advancedOptions.createSummaryCheck.createSummary == 'true' 
-            python -m beams summary-results 
-                --peaklist '$peakList' 
-                --intensity-matrix '$intensityMatrix' 
-                --db '$result_sqlite' 
-                --output '$outputSummary' 
-                --sep '$advancedOptions.createSummaryCheck.separator'
-                #if $advancedOptions.createSummaryCheck.annotations == 'singleRowSeparateColumns' 
-                    --single-column
-                #end if
-                #if $advancedOptions.createSummaryCheck.annotations == 'singleRowMergedColumns' 
-                    --single-row
-                #end if  
-                #if $advancedOptions.createSummaryCheck.digitsCheck.specifyDigits == 'true' 
-                    --ndigits-mz $advancedOptions.createSummaryCheck.digitsCheck.digits
-                #end if  
-                #if $advancedOptions.createSummaryCheck.convertRTCheck.convertRT == 'true' 
-                    --convert-rt $advancedOptions.createSummaryCheck.convertRTCheck.rt
-                #end if      
         #end if
+        #for $format in $summary.format
+            &&
+            python -m beams summary-results
+                --peaklist "$peaklist"
+                #if $intensity_matrix
+                    --intensity-matrix "$intensity_matrix" 
+                #end if
+                --db "$output_sqlite"
 
+                #if $format.rc == ""
+                    --output "summary_mr_mc.tsv"
+                #else if $format.rc == "--single-row"
+                    --output "summary_sr_mc.tsv"
+                #else if $format.rc == "--single-row --single-column"
+                    --output "summary_sr_sc.tsv"
+                #end if
+
+                --pdf "$output_charts"
+                --sep tab
+                $format.rc
+                #if $format.convert_rt != "skip"
+                    --convert-rt $format.convert_rt
+                #end if
+        #end for
     ]]></command>
     <inputs>
-        <param name="peakList" value="" type="data" format="txt" label="Peaklist" help=""></param>
-        <param name="intensityMatrix" value="" type="data" format="txt" label="Intensity matrix" help=""></param>
-        <param name="ionMode" type="select" label="Ion mode">
+        <param name="peaklist" type="data" format="tsv" label="Peaklist" help="" />
+        <param name="intensity_matrix" type="data" optional="true" format="tsv" label="Intensity matrix" help="" />
+        <param name="ion_mode" type="select" label="Ion mode">
             <option value="pos" selected="True">Positive</option>
             <option value="neg" selected="True">Negative</option>
         </param>
-        <param name="massTolerance" value="5.0" type="float" label="Mass tolerance (PPM)" help="">
-        </param>
-        <param name="adductLibrary" type="data" format="txt" label="Adduct library" help=""></param>
-        <section name="advancedOptions" title="Advanced options" expanded="False">
-            <conditional name="groupFeaturesCheck">
-                <param name="groupFeatures" type="boolean" checked="true" label="Group Features" help="" truevalue="true" falsevalue="false" />
+        <param name="adducts_library" type="data" optional="true" format="tsv" label="Adduct library" help="" />
+        <section name="group_features" title="Group Features" help="" expanded="True">
+            <conditional name="condi">
+                <param name="flag" type="boolean" checked="true" label=" " help="" truevalue="true" falsevalue="false" />
                 <when value="true">
-                    <param name="maxRTDifference" value="5.0" type="float" label="Maximum RT Difference (sec)" help="">
+                    <param name="intensity_matrix" type="data" format="tsv" label="Intensity matrix" help=""/>
+                    <param name="max_rt_diff" value="5.0" type="float" label="Maximum retention time difference (sec)" help="">
                     </param>
-                    <param name="groupingMethod" type="select" label="Grouping method">
+                    <param name="grouping_method" type="select" label="Grouping method">
                         <option value="pearson" selected="True">Pearson correlation</option>
                         <option value="spearman">Spearman rank correlation</option>
                     </param>
-                    <param name="coefficientThreshold" value="0.7" type="text" label="Coefficient threshold" help="">
+                    <param name="coefficient_threshold" value="0.7" type="text" label="Coefficient threshold" help="">
                     </param>
-                    <param name="pValueThreshold" value="0.01" type="text" label="P-value threshold" help="">
+                    <param name="pvalue_threshold" value="0.0001" type="text" label="P-value threshold" help="">
                     </param>
                 </when>
+                <when value="false" />
             </conditional>
-            <conditional name="peakPatternsAnnotationCheck">
-                <param name="annotatePeakPatterns" type="boolean" checked="false" label="Annotate Peak Patterns" help="" truevalue="true" falsevalue="false" />
+        </section>
+        <section name="annotate_peak_patterns" title="Annotate Peak Patterns" expanded="True">
+            <conditional name="condi">
+                <param name="flag" type="boolean" checked="true" label=" " help="" truevalue="true" falsevalue="false" />
                 <when value="true">
-                    <conditional name="adductsCheck">
-                        <param name="useAdductsLibrary" type="boolean" checked="true" label="Adducts" help="" truevalue="true" falsevalue="false" />
+                    <param name="ppm" type="float" value="5.0" label="Ppm error tolerance" help="Maximum tolerated m/z deviation in parts per million (ppm)." />
+                    <conditional name="adducts_condi">
+                        <param name="flag" type="boolean" checked="true" label="Annotate adducts" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
-                           <param name="adductsLibrary" type="data" format="txt" label="Adducts library" help=""></param>
+                           <param name="library" type="data" optional="true" format="tsv" label="Library" help="" />
                         </when>
+                        <when value="false" />
                     </conditional>
-                    <conditional name="isotopesCheck">
-                        <param name="useIsotopesLibrary" type="boolean" checked="true" label="Isotopes" help="" truevalue="true" falsevalue="false" />
+                    <conditional name="isotopes_condi">
+                        <param name="flag" type="boolean" checked="true" label="Annotate isotopes" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
-                           <param name="isotopesLibrary" type="data" format="txt" label="Isotopes library" help="">
-                            </param>
+                           <param name="library" type="data" optional="true" format="tsv" label="Library" help="" />
                         </when>
+                        <when value="false" />
                     </conditional>
-                    <conditional name="multipleChargedIonsCheck">
-                        <param name="useMultipleChargedIons" type="boolean" checked="true" label="Multiple charged ions" help="" truevalue="true" falsevalue="false" />
+                    <conditional name="multiple_charged_ions_condi">
+                        <param name="flag" type="boolean" checked="false" label="Annotate multiple charged ions" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
-                           <param name="multipleChargedIonsLibrary" type="data" format="txt" label="Multiple charged ions" help="">
-                            </param>
+                           <param name="library" type="data" optional="true" format="tsv" label="Library" help="" />
                         </when>
+                        <when value="false" />
                     </conditional>
-                    <conditional name="oligomersCheck">
-                        <param name="annotateOligomers" type="boolean" checked="true" label="Oligomers" help="" truevalue="true" falsevalue="false" />
+                    <conditional name="oligomers_condi">
+                        <param name="flag" type="boolean" checked="false" label="Annotate oligomers" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
-                           <param name="monomerUnits" value="3" type="integer" label="Monomer Units" help=""></param>
+                           <param name="max_monomer_units" value="2" type="integer" label="Maximum number of 'monomer' units" help="" />
                         </when>
+                        <when value="false" />
                     </conditional>
                 </when>
+                <when value="false" />
             </conditional>
-            <conditional name="molecularFormulaeAnnotationCheck">
-                <param name="annotateMolecularFormulae" type="boolean" checked="false" label="Annotate Molecular Formulae" help="" truevalue="true" falsevalue="false" />
+        </section>
+        <section name="annotate_molecular_formulae" title="Annotate Molecular Formulae" expanded="True">
+            <conditional name="condi">
+                <param name="flag" type="boolean" checked="false" label=" " help="" truevalue="true" falsevalue="false" />
                 <when value="true">
-                    <conditional name="sourceCheck">
-                        <param name="selectedSource" type="select" label="Source">
+                    <param name="ppm" type="float" value="5.0" label="Ppm error tolerance" help="Maximum tolerated m/z deviation in parts per million (ppm)." />
+                    <conditional name="condi">
+                        <param name="source" type="select" label="Source">
                             <option value="url" selected="True">http://multiomics-int.cs.bham.ac.uk</option>
                             <option value="file">Tab-delimited text file</option>
                         </param>
-                        <when value="file">
-                            <param name="referenceFile" type="data" format="txt" label="Reference file" help="">
-                            </param>
-                        </when>
                         <when value="url">
-                            <param name="maxMZ" value="500" type="integer" label="Maximum m/z" help=""></param>
-                            <param name="heuristicRules" type="boolean" checked="false" label="Heuristic rules" help="" truevalue="true" falsevalue="false" />
+                            <param name="max_mz" value="500" type="integer" label="Maximum m/z" help="" />
+                            <param name="heuristic_rules" type="boolean" checked="true" label="Heuristic rules" help="" truevalue="--heuristic-rules" falsevalue="" />
+                        </when>
+                        <when value="file">
+                            <param name="reference_file" type="data" format="tsv" label="Library" help="" />
                         </when>
                     </conditional>
                 </when>
+                <when value="false" />
             </conditional>
-            <conditional name="compoundsAnnotationCheck">
-                <param name="annotateCompounds" type="boolean" checked="false" label="Annotate Compounds / Metabolites" help="" truevalue="true" falsevalue="false" />
+        </section>
+        <section name="annotate_compounds" title="Annotate Compounds / Metabolites" expanded="True">
+            <conditional name="condi">
+                <param name="flag" type="boolean" checked="false" label=" " help="" truevalue="true" falsevalue="false" />
                 <when value="true">
-                    <conditional name="referenceFileCheck">
-                        <param name="useReferenceFile" type="boolean" checked="false" label="Use reference file" help="" truevalue="true" falsevalue="false" />
-                        <when value="true">
-                            <param name="referenceFile" type="data" format="txt,sqlite" label="Reference File" help=""></param>
+                    <param name="ppm" type="float" value="5.0" label="Ppm error tolerance" help="Maximum tolerated m/z deviation in parts per million (ppm)." />
+                    <conditional name="condi">
+                        <param name="source" type="select" label="Source" refresh_on_change="true">
+                            <option value="databases" selected="True">Compound databases</option>
+                            <option value="file">Tab-delimited text file</option>
+                        </param>
+                        <when value="databases">
+                           <param name="db_name" type="select" label="Select databases" multiple="true" display="checkboxes" dynamic_options = "get_databases()" >
+                               <validator type="no_options" message="Select at least one database." />      
+                           </param>
                         </when>
-                        <when value="false">
-                            <param name="databases" type="select" multiple="true" label="Databases">
-                                <option value="groups" selected="True">groups</option>
-                                <option value="adductPairs" selected="True">adduct_pairs</option>
-                                <option value="isotopes" selected="True">isotopes</option>
-                                <option value="peaklists" selected="True">peaklists</option>
-                                <option value="peakLabels" selected="True">peak_labels</option>
-                                <option value="summary" selected="True">summary</option>
-                            </param>
-                        </when>
-                    </conditional>
-                </when>
-            </conditional>
-            <conditional name="createSummaryCheck">
-                <param name="createSummary" type="boolean" checked="false" label="Create summary" help="" truevalue="true" falsevalue="false" />
-                <when value="true">
-                    <param name="separator" type="select" label="Choose the delimitor">
-                        <option value="tab" selected="True">Tab</option>
-                        <option value="comma" selected="False">Comma</option>
-                    </param>
-                    <param name="annotations" type="select" label="Annotations">
-                        <option value="singleRowSeparateColumns" selected="False">Single row for each feature and separate columns</option>
-                        <option value="singleRowMergedColumns" selected="False">Single row for each feature and merged columns</option>
-                    </param>
-                    <conditional name="convertRTCheck">
-                        <param name="convertRT" type="boolean" checked="true" label="Convert RT" help="" truevalue="true" falsevalue="false" />
-                        <when value="true">
-                            <param name="rt" type="select" label="RT">
-                                <option value="min" selected="True">Minutes</option>
-                                <option value="sec" selected="True">Seconds</option>
-                            </param>
-                        </when>
-                    </conditional>
-                    <conditional name="digitsCheck">
-                        <param name="specifyDigits" type="boolean" checked="false" label="Number of digits" help="" truevalue="true" falsevalue="false" />
-                        <when value="true">
-                            <param name="digits" value="5" type="integer" label="Digits" help=""></param>
+                        <when value="file">
+                            <param name="reference_file" type="data" format="tsv" label="Library" help="" />
                         </when>
                     </conditional>
                 </when>
+                <when value="false" />
             </conditional>
+        </section>
+        <section name="summary" title="Create summary table" help="" expanded="True">
+            <repeat name="format" title="Add table format" min="1">
+                <param name="rc" type="select" label=" ">
+                    <option value="" selected="True">Multiple rows for each feature and separate columns</option>
+                    <option value="--single-row">Single row for each feature and separate columns</option>
+                    <option value="--single-row --single-column">Single row for each feature and merged columns</option>
+                </param>
+                <param name="convert_rt" type="select" label="Convert RT">
+                    <option value="skip" selected="True">skip</option>
+                    <option value="min">to minutes</option>
+                    <option value="sec">to seconds</option>
+                </param>
+            </repeat>
+
         </section>
     </inputs>
     <outputs>
-        <data name="output_graph" format="gml" label="graph" />
-        <data name="result_sqlite" format="sqlite" label="sqlite" />
-        <data name="outputSummary" format="tsv" label="Summary File" />
+        <data name="output_graph" format="txt" label="${tool.name} on ${on_string}: Correlation network (Graph Modelling Language)" >
+            <filter>group_features["condi"]["flag"] is True</filter>
+        </data>
+        <data name="output_sqlite" format="sqlite" label="${tool.name} on ${on_string}: SQLite database" />
+
+        <data name="output_summary_mr_mc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Multiple rows and separate columns)" from_work_dir="summary_mr_mc.tsv" />
+        <data name="output_summary_sr_mc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Single row and separate columns)" from_work_dir="summary_sr_mc.tsv" />
+        <data name="output_summary_sr_sc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Single row and merged columns)" from_work_dir="summary_sr_sc.tsv" />
+
+        <data name="output_charts" format="pdf" label="${tool.name} on ${on_string}: Summary charts" />
     </outputs>
     <tests>
         <test>
-            <param name="peakList" value="variableMetadata.txt"/>
-            <param name="intensityMatrix" value="dataMatrix.txt"/>
-            <param name="maxRetentionTimeDifference" value="5.0"/>
-            <param name="groupingMethod" value="Pearson"/>
-            <param name="coefficientThreshold" value="0.7"/>
-            <param name="pValueThreshold" value="0.01"/>
-            <param name="peakPatternsAnnotationCheck" value="true" />
-            <param name="useAdductsLibrary" value="true" />
-            <param name="useIsotopesLibrary" value="true" />
-            <param name="adductsLibrary" value="adducts.txt" />
-            <param name="isotopesLibrary" value="isotopes.txt" />
-            <output name="outputSummary" file="summary.tsv" />
-            <output name="output_graph" file="output_graph.gml" />
-            <output name="result_sqlite" file="output_db.sqlite" />
+            <param name="peaklist" value="variableMetadata.txt"/>
+            <param name="intensity_matrix" value="dataMatrix.txt"/>
+
+            <param name="group_features|condi|flag" value="true"/>
+            <param name="group_features|condi|intensity_matrix" value="dataMatrix.txt"/>
+
+            <param name="annotate_peak_patterns|condi|flag" value="true"/>
+
+            <param name="annotate_peak_patterns|condi|annotate_adducts_condi|flag" value="true"/>
+            <param name="annotate_peak_patterns|condi|annotate_adducts_condi|adducts_library" value="adducts.txt"/>
+            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|flag" value="true"/>
+            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|isotopes_library" value="isotopes.txt"/>
+
+            <param name="annotate_molecular_formulae|condi|flag" value="false"/>
+            <param name="annotate_compounds|condi|flag" value="false"/>
+
+            <repeat name="summary|format">
+                <param name="rc" value=""/>
+                <param name="rt_convert" value="skip"/>
+            </repeat>
+
+            <repeat name="summary|format">
+                <param name="rc" value="--single-row"/>
+                <param name="rt_convert" value="skip"/>
+            </repeat>
+
+            <repeat name="summary|format">
+                <param name="rc" value="--single-row --single-column"/>
+                <param name="rt_convert" value="skip"/>
+            </repeat>
+
+            <output name="output_graph" file="output_graph_pp.gml" ftype="txt" compare="sim_size"/>
+            <output name="output_sqlite" file="output_db_pp.sqlite" ftype="sqlite" compare="sim_size"/>
+            <output name="output_summary_mr_mc" file="summary_mr_mc_pp.tsv" ftype="tsv" />
+            <output name="output_summary_sr_mc" file="summary_sr_mc_pp.tsv" ftype="tsv" />
+            <output name="output_summary_sr_sc" file="summary_sr_sc_pp.tsv" ftype="tsv" />
+            <output name="output_charts" file="charts_pp.pdf" ftype="pdf" compare="sim_size"/>
+        </test>
+        <test>
+            <param name="peaklist" value="variableMetadata_intensity.txt"/>
+            <param name="adducts_library" value="adducts.txt"/>
+
+            <param name="group_features|condi|flag" value="false"/>
+            <param name="annotate_peak_patterns|condi|flag" value="false"/>
+            <param name="annotate_molecular_formulae|condi|flag" value="false"/>
+            <param name="annotate_compounds|condi|flag" value="true"/>
+
+            <param name="annotate_compounds|condi|condi|source" value="databases"/>
+            <param name="annotate_compounds|condi|condi|db_name" value="hmdb_full_v4_0_v1"/>
+            <param name="annotate_compounds|condi|ppm" value="3.0"/>
+            
+            <repeat name="summary|format">
+                <param name="rc" value=""/>
+                <param name="rt_convert" value="skip"/>
+            </repeat>
+            <repeat name="summary|format">
+                <param name="rc" value="--single-row"/>
+                <param name="rt_convert" value="skip"/>
+            </repeat>
+            <repeat name="summary|format">
+                <param name="rc" value="--single-row --single-column"/>
+                <param name="rt_convert" value="skip"/>
+            </repeat>
+
+            <output name="output_sqlite" file="output_db_ac.sqlite" ftype="sqlite" compare="sim_size"/>
+            <output name="output_summary_mr_mc" file="summary_mr_mc_ac.tsv" ftype="tsv" />
+            <output name="output_summary_sr_mc" file="summary_sr_mc_ac.tsv" ftype="tsv" />
+            <output name="output_summary_sr_sc" file="summary_sr_sc_ac.tsv" ftype="tsv" />
+            <output name="output_charts" file="charts_ac.pdf" ftype="pdf" compare="sim_size"/>
+        </test>
+        <test>
+            <param name="peaklist" value="variableMetadata.txt"/>
+            <param name="intensity_matrix" value="dataMatrix.txt"/>
+            <param name="adducts_library" value="adducts.txt"/>
+
+            <param name="group_features|condi|flag" value="true"/>
+            <param name="group_features|condi|intensity_matrix" value="dataMatrix.txt"/>
+
+            <param name="annotate_peak_patterns|condi|flag" value="true"/>
+
+            <param name="annotate_peak_patterns|condi|annotate_adducts_condi|flag" value="true"/>
+            <param name="annotate_peak_patterns|condi|annotate_adducts_condi|adducts_library" value="adducts.txt"/>
+            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|flag" value="true"/>
+            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|isotopes_library" value="isotopes.txt"/>
+
+            <param name="annotate_molecular_formulae|condi|flag" value="false"/>
+            <param name="annotate_compounds|condi|flag" value="true"/>
+
+            <param name="annotate_compounds|condi|condi|source" value="databases"/>
+            <param name="annotate_compounds|condi|condi|db_name" value="hmdb_full_v4_0_v1"/>
+            <param name="annotate_compounds|condi|ppm" value="3.0"/>
+
+            <repeat name="summary|format">
+                <param name="rc" value=""/>
+                <param name="rt_convert" value="skip"/>
+            </repeat>
+
+            <repeat name="summary|format">
+                <param name="rc" value="--single-row"/>
+                <param name="rt_convert" value="skip"/>
+            </repeat>
+
+           <repeat name="summary|format">
+                <param name="rc" value="--single-row --single-column"/>
+                <param name="rt_convert" value="skip"/>
+            </repeat>
+
+            <output name="output_graph" file="output_graph_pp_ac.gml" ftype="txt" compare="sim_size"/>
+            <output name="output_sqlite" file="output_db_pp_ac.sqlite" ftype="sqlite" compare="sim_size"/>
+            <output name="output_summary_mr_mc" file="summary_mr_mc_pp_ac.tsv" ftype="tsv" />
+            <output name="output_summary_sr_mc" file="summary_sr_mc_pp_ac.tsv" ftype="tsv" />
+            <output name="output_summary_sr_sc" file="summary_sr_sc_pp_ac.tsv" ftype="tsv" />
+            <output name="output_charts" file="charts_pp_ac.pdf" ftype="pdf" compare="sim_size"/>
         </test>
     </tests>
     <help>
     </help>
-    <expand macro="citations" />
+    <citations>
+    </citations>
 </tool>
