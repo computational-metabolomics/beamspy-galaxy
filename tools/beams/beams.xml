@@ -10,9 +10,9 @@
             &&
             python -m beams group-features
                 --peaklist "$peaklist"
-                --intensity-matrix "$group_features.condi.intensity_matrix" 
-                --gml-file "$output_graph" 
-                --db "$output_sqlite" 
+                --intensity-matrix "$group_features.condi.intensity_matrix"
+                --gml-file "$output_graph"
+                --db "$output_sqlite"
                 --max-rt-diff $group_features.condi.max_rt_diff
                 --method $group_features.condi.grouping_method
                 --coeff-threshold $group_features.condi.coefficient_threshold
@@ -20,12 +20,12 @@
                 --ncpus \${GALAXY_SLOTS:-4}
         #end if
 
-        #if $annotate_peak_patterns.condi.flag == "true" 
+        #if $annotate_peak_patterns.condi.flag == "true"
             &&
             python -m beams annotate-peak-patterns
                 --peaklist "$peaklist"
                 #if $intensity_matrix
-                    --intensity-matrix "$intensity_matrix" 
+                    --intensity-matrix "$intensity_matrix"
                 #end if
                 #if $group_features.condi.flag == "true"
                     --gml-file "$output_graph"
@@ -60,9 +60,9 @@
         #if $annotate_molecular_formulae.condi.flag == "true"
             &&
             python -m beams annotate-mf
-                --peaklist "$peaklist" 
+                --peaklist "$peaklist"
                 #if $intensity_matrix
-                    --intensity-matrix "$intensity_matrix" 
+                    --intensity-matrix "$intensity_matrix"
                 #end if
                 --db "$output_sqlite"
                 #if $annotate_molecular_formulae.condi.condi.source == "url"
@@ -79,52 +79,64 @@
                     --adducts-library "$adducts_library"
                 #end if
         #end if
-
         #if $annotate_compounds.condi.flag == "true"
-            &&
-            python -m beams annotate-compounds
-                --peaklist "$peaklist" 
-                #if $intensity_matrix
-                    --intensity-matrix "$intensity_matrix" 
-                #end if
-                --db "$output_sqlite"
-                #if $annotate_compounds.condi.condi.source == "databases"
-                    --db-name "$annotate_compounds.condi.condi.db_name"
-                #end if
-                #if $annotate_compounds.condi.condi.source == "file"
-                    --db-compounds "$annotate_compounds.condi.condi.reference_file"
-                    --db-name "reference_file"
-                #end if
-                --ion-mode $ion_mode
-                --ppm $annotate_compounds.condi.ppm
-                #if $adducts_library
-                    --adducts-library $adducts_library
-                #end if
+            #if $annotate_compounds.condi.condi.source == "databases"
+                #set $db_names = str($annotate_compounds.condi.condi.db_name).split(",")
+            #else if $annotate_compounds.condi.condi.source == "file"
+                #set $db_names = ["dummy"]
+            #end if
 
+            #for $db_name in $db_names
+                &&
+                python -m beams annotate-compounds
+                    --peaklist "$peaklist"
+                    #if $intensity_matrix
+                        --intensity-matrix "$intensity_matrix"
+                    #end if
+                    --db "$output_sqlite"
+                    #if $annotate_compounds.condi.condi.source == "databases"
+                        --db-name "$db_name"
+                    #end if
+                    #if $annotate_compounds.condi.condi.source == "file"
+                        --db-compounds "$annotate_compounds.condi.condi.reference_file"
+                        --db-name "reference_file"
+                    #end if
+                    --ion-mode $ion_mode
+                    --ppm $annotate_compounds.condi.ppm
+                    #if $adducts_library
+                        --adducts-library $adducts_library
+                    #end if
+            #end for
         #end if
-        #for $format in $summary.format
-            &&
-            python -m beams summary-results
-                --peaklist "$peaklist"
-                #if $intensity_matrix
-                    --intensity-matrix "$intensity_matrix" 
-                #end if
-                --db "$output_sqlite"
+        #for $format in [str($summary.mr_mc), str($summary.sr_mc), str($summary.sr_sc)]
+            #if $format != ""
+                &&
+                python -m beams summary-results
+                    --peaklist "$peaklist"
+                    #if $intensity_matrix
+                        --intensity-matrix "$intensity_matrix"
+                    #end if
+                    --db "$output_sqlite"
 
-                #if $format.rc == ""
-                    --output "summary_mr_mc.tsv"
-                #else if $format.rc == "--single-row"
-                    --output "summary_sr_mc.tsv"
-                #else if $format.rc == "--single-row --single-column"
-                    --output "summary_sr_sc.tsv"
-                #end if
-
-                --pdf "$output_charts"
-                --sep tab
-                $format.rc
-                #if $format.convert_rt != "skip"
-                    --convert-rt $format.convert_rt
-                #end if
+                    #if $format == "multiple"
+                        --output "$output_summary_mr_mc"
+                    #else if $format == "--single-row"
+                        --output "$output_summary_sr_mc"
+                    #else if $format == "--single-row --single-column"
+                        --output "$output_summary_sr_sc"
+                    #end if
+                    #if $output_charts
+                        --pdf "$output_charts"
+                        #set $output_charts = None
+                    #end if
+                    --sep tab
+                    #if $format == "--single-row --single-column" or $format == "--single-row"
+                        $format
+                    #end if
+                    #if $summary.convert_rt != "skip"
+                        --convert-rt $summary.convert_rt
+                    #end if
+            #end if
         #end for
     ]]></command>
     <inputs>
@@ -236,20 +248,15 @@
                 <when value="false" />
             </conditional>
         </section>
-        <section name="summary" title="Create summary table" help="" expanded="True">
-            <repeat name="format" title="Add table format" min="1">
-                <param name="rc" type="select" label=" ">
-                    <option value="" selected="True">Multiple rows for each feature and separate columns</option>
-                    <option value="--single-row">Single row for each feature and separate columns</option>
-                    <option value="--single-row --single-column">Single row for each feature and merged columns</option>
-                </param>
-                <param name="convert_rt" type="select" label="Convert RT">
-                    <option value="skip" selected="True">skip</option>
-                    <option value="min">to minutes</option>
-                    <option value="sec">to seconds</option>
-                </param>
-            </repeat>
-
+        <section name="summary" title="Create summary table(s)" help="" expanded="True">
+            <param name="mr_mc" type="boolean" checked="true" truevalue="multiple" falsevalue="" label="Multiple rows for each feature and separate columns" />
+            <param name="sr_mc" type="boolean" truevalue="--single-row" falsevalue="" label="Single row for each feature and separate columns" />
+            <param name="sr_sc" type="boolean" truevalue="--single-row --single-column" falsevalue="" label="Single row for each feature and merged columns" />
+            <param name="convert_rt" type="select" label="Convert RT">
+                <option value="skip" selected="True">skip</option>
+                <option value="min">to minutes</option>
+                <option value="sec">to seconds</option>
+            </param>
         </section>
     </inputs>
     <outputs>
@@ -257,11 +264,15 @@
             <filter>group_features["condi"]["flag"] is True</filter>
         </data>
         <data name="output_sqlite" format="sqlite" label="${tool.name} on ${on_string}: SQLite database" />
-
-        <data name="output_summary_mr_mc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Multiple rows and separate columns)" from_work_dir="summary_mr_mc.tsv" />
-        <data name="output_summary_sr_mc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Single row and separate columns)" from_work_dir="summary_sr_mc.tsv" />
-        <data name="output_summary_sr_sc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Single row and merged columns)" from_work_dir="summary_sr_sc.tsv" />
-
+        <data name="output_summary_mr_mc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Multiple rows and separate columns)">
+            <filter>summary["mr_mc"] is True</filter>
+        </data>
+        <data name="output_summary_sr_mc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Single row and separate columns)">
+            <filter>summary["sr_mc"] is True</filter>
+        </data>
+        <data name="output_summary_sr_sc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Single row and merged columns)">
+            <filter>summary["sr_sc"] is True</filter>
+        </data>
         <data name="output_charts" format="pdf" label="${tool.name} on ${on_string}: Summary charts" />
     </outputs>
     <tests>
@@ -282,26 +293,12 @@
             <param name="annotate_molecular_formulae|condi|flag" value="false"/>
             <param name="annotate_compounds|condi|flag" value="false"/>
 
-            <repeat name="summary|format">
-                <param name="rc" value=""/>
-                <param name="rt_convert" value="skip"/>
-            </repeat>
-
-            <repeat name="summary|format">
-                <param name="rc" value="--single-row"/>
-                <param name="rt_convert" value="skip"/>
-            </repeat>
-
-            <repeat name="summary|format">
-                <param name="rc" value="--single-row --single-column"/>
-                <param name="rt_convert" value="skip"/>
-            </repeat>
+            <param name="summary|mr_mc" value="multiple"/>
+            <param name="summary|rt_convert" value="skip"/>
 
             <output name="output_graph" file="output_graph_pp.gml" ftype="txt" compare="sim_size"/>
             <output name="output_sqlite" file="output_db_pp.sqlite" ftype="sqlite" compare="sim_size"/>
             <output name="output_summary_mr_mc" file="summary_mr_mc_pp.tsv" ftype="tsv" />
-            <output name="output_summary_sr_mc" file="summary_sr_mc_pp.tsv" ftype="tsv" />
-            <output name="output_summary_sr_sc" file="summary_sr_sc_pp.tsv" ftype="tsv" />
             <output name="output_charts" file="charts_pp.pdf" ftype="pdf" compare="sim_size"/>
         </test>
         <test>
@@ -317,24 +314,32 @@
             <param name="annotate_compounds|condi|condi|db_name" value="hmdb_full_v4_0_v1"/>
             <param name="annotate_compounds|condi|ppm" value="3.0"/>
             
-            <repeat name="summary|format">
-                <param name="rc" value=""/>
-                <param name="rt_convert" value="skip"/>
-            </repeat>
-            <repeat name="summary|format">
-                <param name="rc" value="--single-row"/>
-                <param name="rt_convert" value="skip"/>
-            </repeat>
-            <repeat name="summary|format">
-                <param name="rc" value="--single-row --single-column"/>
-                <param name="rt_convert" value="skip"/>
-            </repeat>
+            <param name="summary|sr_mc" value="--single-row"/>
+            <param name="summary|rt_convert" value="skip"/>
 
             <output name="output_sqlite" file="output_db_ac.sqlite" ftype="sqlite" compare="sim_size"/>
-            <output name="output_summary_mr_mc" file="summary_mr_mc_ac.tsv" ftype="tsv" />
             <output name="output_summary_sr_mc" file="summary_sr_mc_ac.tsv" ftype="tsv" />
-            <output name="output_summary_sr_sc" file="summary_sr_sc_ac.tsv" ftype="tsv" />
             <output name="output_charts" file="charts_ac.pdf" ftype="pdf" compare="sim_size"/>
+        </test>
+        <test>
+            <param name="peaklist" value="variableMetadata_intensity.txt"/>
+            <param name="adducts_library" value="adducts.txt"/>
+
+            <param name="group_features|condi|flag" value="false"/>
+            <param name="annotate_peak_patterns|condi|flag" value="false"/>
+            <param name="annotate_molecular_formulae|condi|flag" value="false"/>
+            <param name="annotate_compounds|condi|flag" value="true"/>
+
+            <param name="annotate_compounds|condi|condi|source" value="databases"/>
+            <param name="annotate_compounds|condi|condi|db_name" value="hmdb_urine_v4_0_v1,hmdb_serum_v4_0_v1"/>
+            <param name="annotate_compounds|condi|ppm" value="3.0"/>
+
+            <param name="summary|sr_mc" value="--single-row"/>
+            <param name="summary|rt_convert" value="skip"/>
+
+            <output name="output_sqlite" file="output_db_2dbs_ac.sqlite" ftype="sqlite" compare="sim_size"/>
+            <output name="output_summary_sr_mc" file="summary_2dbs_sr_mc_ac.tsv" ftype="tsv" />
+            <output name="output_charts" file="charts_2dbs_ac.pdf" ftype="pdf" compare="sim_size"/>
         </test>
         <test>
             <param name="peaklist" value="variableMetadata.txt"/>
@@ -358,31 +363,18 @@
             <param name="annotate_compounds|condi|condi|db_name" value="hmdb_full_v4_0_v1"/>
             <param name="annotate_compounds|condi|ppm" value="3.0"/>
 
-            <repeat name="summary|format">
-                <param name="rc" value=""/>
-                <param name="rt_convert" value="skip"/>
-            </repeat>
-
-            <repeat name="summary|format">
-                <param name="rc" value="--single-row"/>
-                <param name="rt_convert" value="skip"/>
-            </repeat>
-
-           <repeat name="summary|format">
-                <param name="rc" value="--single-row --single-column"/>
-                <param name="rt_convert" value="skip"/>
-            </repeat>
+            <param name="summary|sr_mc" value="--single-row"/>
+            <param name="summary|sr_sc" value="--single-row --single-column"/>
+            <param name="summary|rt_convert" value="skip"/>
 
             <output name="output_graph" file="output_graph_pp_ac.gml" ftype="txt" compare="sim_size"/>
             <output name="output_sqlite" file="output_db_pp_ac.sqlite" ftype="sqlite" compare="sim_size"/>
-            <output name="output_summary_mr_mc" file="summary_mr_mc_pp_ac.tsv" ftype="tsv" />
-            <output name="output_summary_sr_mc" file="summary_sr_mc_pp_ac.tsv" ftype="tsv" />
             <output name="output_summary_sr_sc" file="summary_sr_sc_pp_ac.tsv" ftype="tsv" />
             <output name="output_charts" file="charts_pp_ac.pdf" ftype="pdf" compare="sim_size"/>
         </test>
     </tests>
     <help>
-BEAMS - Birmingham mEtabolite Annotation for Mass SpectroMetry
+BEAMS - Birmingham mEtabolite Annotation for Mass Spectrometry
 ===============================================================
 
 ..
