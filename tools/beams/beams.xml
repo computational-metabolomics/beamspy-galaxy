@@ -10,7 +10,7 @@
             &&
             python -m beams group-features
                 --peaklist "$peaklist"
-                --intensity-matrix "$group_features.condi.intensity_matrix"
+                --intensity-matrix "$intensity_matrix"
                 --gml-file "$output_graph"
                 --db "$output_sqlite"
                 --max-rt-diff $group_features.condi.max_rt_diff
@@ -33,22 +33,19 @@
                 --db "$output_sqlite"
                 --ion-mode $ion_mode
                 --ppm $annotate_peak_patterns.condi.ppm
-                #if $annotate_peak_patterns.condi.adducts_condi.flag == "true"
+                #if $annotate_peak_patterns.condi.annotate_adducts_flag == "true"
                     --adducts
-                    #if $annotate_peak_patterns.condi.adducts_condi.library
-                        --adducts-library "$annotate_peak_patterns.condi.adducts_condi.library"
-                    #end if
                 #end if
                 #if $annotate_peak_patterns.condi.isotopes_condi.flag == "true"
                     --isotopes
-                    #if $annotate_peak_patterns.condi.isotopes_condi.library
-                        --isotopes-library "$annotate_peak_patterns.condi.isotopes_condi.library"
+                    #if $annotate_peak_patterns.condi.isotopes_condi.library_isotopes
+                        --isotopes-library "$annotate_peak_patterns.condi.isotopes_condi.library_isotopes"
                     #end if
                 #end if
                 #if $annotate_peak_patterns.condi.multiple_charged_ions_condi.flag == "true"
                     --multiple-charged-ions
-                    #if $annotate_peak_patterns.condi.multiple_charged_ions_condi.library
-                        --multiple-charged-ions-library "$annotate_peak_patterns.condi.multiple_charged_ions_condi.library"
+                    #if $annotate_peak_patterns.condi.multiple_charged_ions_condi.library_multiple_charged_ions
+                        --multiple-charged-ions-library "$annotate_peak_patterns.condi.multiple_charged_ions_condi.library_multiple_charged_ions"
                     #end if
                 #end if
                 #if $annotate_peak_patterns.condi.oligomers_condi.flag == "true"
@@ -75,8 +72,8 @@
                 #end if
                 --ion-mode $ion_mode
                 --ppm $annotate_molecular_formulae.condi.ppm
-                #if $adducts_library
-                    --adducts-library "$adducts_library"
+                #if $library_adducts
+                    --adducts-library "$library_adducts"
                 #end if
         #end if
         #if $annotate_compounds.condi.flag == "true"
@@ -103,8 +100,8 @@
                     #end if
                     --ion-mode $ion_mode
                     --ppm $annotate_compounds.condi.ppm
-                    #if $adducts_library
-                        --adducts-library $adducts_library
+                    #if $library_adducts
+                        --adducts-library $library_adducts
                     #end if
             #end for
         #end if
@@ -146,12 +143,11 @@
             <option value="pos" selected="True">Positive</option>
             <option value="neg" selected="True">Negative</option>
         </param>
-        <param name="adducts_library" type="data" optional="true" format="tsv" label="Adduct library" help="" />
+        <param name="library_adducts" type="data" optional="true" format="tsv" label="Library adducts" help="" />
         <section name="group_features" title="Group Features" help="" expanded="True">
             <conditional name="condi">
                 <param name="flag" type="boolean" checked="true" label=" " help="" truevalue="true" falsevalue="false" />
                 <when value="true">
-                    <param name="intensity_matrix" type="data" format="tsv" label="Intensity matrix" help=""/>
                     <param name="max_rt_diff" value="5.0" type="float" label="Maximum retention time difference (sec)" help="">
                     </param>
                     <param name="grouping_method" type="select" label="Grouping method">
@@ -171,24 +167,18 @@
                 <param name="flag" type="boolean" checked="true" label=" " help="" truevalue="true" falsevalue="false" />
                 <when value="true">
                     <param name="ppm" type="float" value="5.0" label="Ppm error tolerance" help="Maximum tolerated m/z deviation in parts per million (ppm)." />
-                    <conditional name="adducts_condi">
-                        <param name="flag" type="boolean" checked="true" label="Annotate adducts" help="" truevalue="true" falsevalue="false" />
-                        <when value="true">
-                           <param name="library" type="data" optional="true" format="tsv" label="Library" help="" />
-                        </when>
-                        <when value="false" />
-                    </conditional>
+                    <param name="annotate_adducts_flag" type="boolean" checked="true" label="Annotate adducts" help="" truevalue="true" falsevalue="false" />
                     <conditional name="isotopes_condi">
                         <param name="flag" type="boolean" checked="true" label="Annotate isotopes" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
-                           <param name="library" type="data" optional="true" format="tsv" label="Library" help="" />
+                           <param name="library_isotopes" type="data" optional="true" format="tsv" label="Library isotopes" help="" />
                         </when>
                         <when value="false" />
                     </conditional>
                     <conditional name="multiple_charged_ions_condi">
                         <param name="flag" type="boolean" checked="false" label="Annotate multiple charged ions" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
-                           <param name="library" type="data" optional="true" format="tsv" label="Library" help="" />
+                           <param name="library_multiple_charged_ions" type="data" optional="true" format="tsv" label="Library multiple charged ions" help="" />
                         </when>
                         <when value="false" />
                     </conditional>
@@ -218,7 +208,7 @@
                             <param name="heuristic_rules" type="boolean" checked="true" label="Heuristic rules" help="" truevalue="--heuristic-rules" falsevalue="" />
                         </when>
                         <when value="file">
-                            <param name="reference_file" type="data" format="tsv" label="Library" help="" />
+                            <param name="reference_file" type="data" format="tsv" label="Library molecular formulae" help="" />
                         </when>
                     </conditional>
                 </when>
@@ -241,7 +231,7 @@
                            </param>
                         </when>
                         <when value="file">
-                            <param name="reference_file" type="data" format="tsv" label="Library" help="" />
+                            <param name="reference_file" type="data" format="tsv" label="Library compounds" help="" />
                         </when>
                     </conditional>
                 </when>
@@ -279,16 +269,16 @@
         <test>
             <param name="peaklist" value="variableMetadata.txt"/>
             <param name="intensity_matrix" value="dataMatrix.txt"/>
+            <param name="library_adducts" value="adducts.txt"/>
 
             <param name="group_features|condi|flag" value="true"/>
             <param name="group_features|condi|intensity_matrix" value="dataMatrix.txt"/>
 
             <param name="annotate_peak_patterns|condi|flag" value="true"/>
 
-            <param name="annotate_peak_patterns|condi|annotate_adducts_condi|flag" value="true"/>
-            <param name="annotate_peak_patterns|condi|annotate_adducts_condi|adducts_library" value="adducts.txt"/>
+            <param name="annotate_peak_patterns|condi|annotate_adducts_flag" value="true"/>
             <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|flag" value="true"/>
-            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|isotopes_library" value="isotopes.txt"/>
+            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|library_isotopes" value="isotopes.txt"/>
 
             <param name="annotate_molecular_formulae|condi|flag" value="false"/>
             <param name="annotate_compounds|condi|flag" value="false"/>
@@ -303,7 +293,7 @@
         </test>
         <test>
             <param name="peaklist" value="variableMetadata_intensity.txt"/>
-            <param name="adducts_library" value="adducts.txt"/>
+            <param name="library_adducts" value="adducts.txt"/>
 
             <param name="group_features|condi|flag" value="false"/>
             <param name="annotate_peak_patterns|condi|flag" value="false"/>
@@ -323,7 +313,7 @@
         </test>
         <test>
             <param name="peaklist" value="variableMetadata_intensity.txt"/>
-            <param name="adducts_library" value="adducts.txt"/>
+            <param name="library_adducts" value="adducts.txt"/>
 
             <param name="group_features|condi|flag" value="false"/>
             <param name="annotate_peak_patterns|condi|flag" value="false"/>
@@ -344,17 +334,16 @@
         <test>
             <param name="peaklist" value="variableMetadata.txt"/>
             <param name="intensity_matrix" value="dataMatrix.txt"/>
-            <param name="adducts_library" value="adducts.txt"/>
+            <param name="library_adducts" value="adducts.txt"/>
 
             <param name="group_features|condi|flag" value="true"/>
             <param name="group_features|condi|intensity_matrix" value="dataMatrix.txt"/>
 
             <param name="annotate_peak_patterns|condi|flag" value="true"/>
 
-            <param name="annotate_peak_patterns|condi|annotate_adducts_condi|flag" value="true"/>
-            <param name="annotate_peak_patterns|condi|annotate_adducts_condi|adducts_library" value="adducts.txt"/>
+            <param name="annotate_peak_patterns|condi|annotate_adducts_flag" value="true"/>
             <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|flag" value="true"/>
-            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|isotopes_library" value="isotopes.txt"/>
+            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|library_isotopes" value="isotopes.txt"/>
 
             <param name="annotate_molecular_formulae|condi|flag" value="false"/>
             <param name="annotate_compounds|condi|flag" value="true"/>
