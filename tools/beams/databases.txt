@@ -1,1 +1,25 @@
-description	database_namePlantCyc - ChlamyCyc (Chlamydomonas reinhardtii) | 2018-07-02 | v1	biocyc_chlamycyc_20180702_v1CHEBI - Full database | rel169 | v1	chebi_full_rel169_v1CHEBI -  3stars records | rel169 | v1	chebi_3star_rel169_v1DrugBank | v5.1.1 | v1	drugbank_full_v5_1_1_v1FooDB - Food Component Database | v1.0 | v1	foodb_full_v1_0_v1HMDB - The Urine Metabolome Database | v4.0 | v1	hmdb_urine_v4_0_v1HMDB - The Serum Metabolome Database | v4.0 | v1	hmdb_serum_v4_0_v1HMDB - The cerebrospinal fluid (CSF) Metabolome Database | v4.0 | v1	hmdb_csf_v4_0_v1HMDB - The Saliva Metabolome Database | v4.0 | v1	hmdb_saliva_v4_0_v1HMDB - The Fecal Metabolome Database | v4.0 | v1	hmdb_feces_v4_0_v1HMDB - The Sweat Metabolome Database | v4.0 | v1	hmdb_sweat_v4_0_v1HMDB - The Human Metabolome Database | v4.0 | v1	hmdb_full_v4_0_v1KEGG - Daphnia pulex (dpx) | 2018-11-01 | v1	kegg_dpx_20181101_v1KEGG - Human (hsa) | 2018-11-01 | v1	kegg_hsa_20181101_v1KEGG - Full database | 2018-11-01 | v1	kegg_full_20181101_v1LIPID_MAPS - FattyAcyls | 2018-12-17 | v1	lipidmaps_fattyacyls_20181217_v1LIPID_MAPS - Glycerolipids | 2018-12-17 | v1	lipidmaps_glycerolipids_20181217_v1LIPID_MAPS - Glycerophospholipids | 2018-12-17 | v1	lipidmaps_slycerophospholipids_20181217_v1LIPID_MAPS - Polyketides | 2018-12-17 | v1	lipidmaps_solyketides_20181217_v1LIPID_MAPS - PrenolLipids | 2018-12-17 | v1	lipidmaps_srenollipids_20181217_v1LIPID_MAPS - Sacccharolipids | 2018-12-17 | v1	lipidmaps_sacccharolipids_20181217_v1LIPID_MAPS - Sphingolipids | 2018-12-17 | v1	lipidmaps_sphingolipids_20181217_v1LIPID_MAPS - SterolLipids | 2018-12-17 | v1	lipidmaps_sterollipids_20181217_v1LIPID_MAPS - Full database | 2018-12-17 | v1	lipidmaps_full_20181217_v1Yeast Metabolome Database (YMDB) | v2.0 | v1	ymdb_full_v2_0_v1
+description	database_name
+PlantCyc - ChlamyCyc (Chlamydomonas reinhardtii) | 2018-07-02 | v1	biocyc_chlamycyc_20180702_v1
+CHEBI - Full database | rel169 | v1	chebi_full_rel169_v1
+CHEBI -  3stars records | rel169 | v1	chebi_3star_rel169_v1
+FooDB - Food Component Database | v1.0 | v1	foodb_full_v1_0_v1
+HMDB - The Urine Metabolome Database | v4.0 | v1	hmdb_urine_v4_0_v1
+HMDB - The Serum Metabolome Database | v4.0 | v1	hmdb_serum_v4_0_v1
+HMDB - The cerebrospinal fluid (CSF) Metabolome Database | v4.0 | v1	hmdb_csf_v4_0_v1
+HMDB - The Saliva Metabolome Database | v4.0 | v1	hmdb_saliva_v4_0_v1
+HMDB - The Fecal Metabolome Database | v4.0 | v1	hmdb_feces_v4_0_v1
+HMDB - The Sweat Metabolome Database | v4.0 | v1	hmdb_sweat_v4_0_v1
+HMDB - The Human Metabolome Database | v4.0 | v1	hmdb_full_v4_0_v1
+KEGG - Daphnia pulex (dpx) | 2018-11-01 | v1	kegg_dpx_20181101_v1
+KEGG - Human (hsa) | 2018-11-01 | v1	kegg_hsa_20181101_v1
+KEGG - Full database | 2018-11-01 | v1	kegg_full_20181101_v1
+LIPID_MAPS - FattyAcyls | 2018-12-17 | v1	lipidmaps_fattyacyls_20181217_v1
+LIPID_MAPS - Glycerolipids | 2018-12-17 | v1	lipidmaps_glycerolipids_20181217_v1
+LIPID_MAPS - Glycerophospholipids | 2018-12-17 | v1	lipidmaps_slycerophospholipids_20181217_v1
+LIPID_MAPS - Polyketides | 2018-12-17 | v1	lipidmaps_solyketides_20181217_v1
+LIPID_MAPS - PrenolLipids | 2018-12-17 | v1	lipidmaps_srenollipids_20181217_v1
+LIPID_MAPS - Sacccharolipids | 2018-12-17 | v1	lipidmaps_sacccharolipids_20181217_v1
+LIPID_MAPS - Sphingolipids | 2018-12-17 | v1	lipidmaps_sphingolipids_20181217_v1
+LIPID_MAPS - SterolLipids | 2018-12-17 | v1	lipidmaps_sterollipids_20181217_v1
+LIPID_MAPS - Full database | 2018-12-17 | v1	lipidmaps_full_20181217_v1
+Yeast Metabolome Database (YMDB) | v2.0 | v1	ymdb_full_v2_0_v1
