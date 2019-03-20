@@ -64,7 +64,6 @@
                 --db "$output_sqlite"
                 #if $annotate_molecular_formulae.condi.condi.source == "url"
                     --db-mf "http://multiomics-int.cs.bham.ac.uk"
-                    $annotate_molecular_formulae.condi.condi.heuristic_rules
                     --max-mz $annotate_molecular_formulae.condi.condi.max_mz
                 #end if
                 #if $annotate_molecular_formulae.condi.condi.source == "file"
@@ -205,7 +204,6 @@
                         </param>
                         <when value="url">
                             <param name="max_mz" value="500" type="integer" label="Maximum m/z" help="" />
-                            <param name="heuristic_rules" type="boolean" checked="true" label="Heuristic rules" help="" truevalue="--heuristic-rules" falsevalue="" />
                         </when>
                         <when value="file">
                             <param name="reference_file" type="data" format="tsv" label="Library molecular formulae" help="" />
