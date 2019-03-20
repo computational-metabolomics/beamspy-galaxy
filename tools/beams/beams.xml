@@ -136,13 +136,13 @@
         #end for
     ]]></command>
     <inputs>
-        <param name="peaklist" type="data" format="tsv" label="Peaklist" help="" />
-        <param name="intensity_matrix" type="data" optional="true" format="tsv" label="Intensity matrix" help="" />
+        <param name="peaklist" type="data" format="tsv,tabular" label="Peaklist" help="" />
+        <param name="intensity_matrix" type="data" optional="true" format="tsv,tabular" label="Intensity matrix" help="" />
         <param name="ion_mode" type="select" label="Ion mode">
             <option value="pos" selected="True">Positive</option>
             <option value="neg" selected="True">Negative</option>
         </param>
-        <param name="library_adducts" type="data" optional="true" format="tsv" label="Library adducts" help="" />
+        <param name="library_adducts" type="data" optional="true" format="tsv,tabular" label="Library adducts" help="" />
         <section name="group_features" title="Group Features" help="" expanded="True">
             <conditional name="condi">
                 <param name="flag" type="boolean" checked="true" label=" " help="" truevalue="true" falsevalue="false" />
@@ -170,14 +170,14 @@
                     <conditional name="isotopes_condi">
                         <param name="flag" type="boolean" checked="true" label="Annotate isotopes" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
-                           <param name="library_isotopes" type="data" optional="true" format="tsv" label="Library isotopes" help="" />
+                           <param name="library_isotopes" type="data" optional="true" format="tsv,tabular" label="Library isotopes" help="" />
                         </when>
                         <when value="false" />
                     </conditional>
                     <conditional name="multiple_charged_ions_condi">
                         <param name="flag" type="boolean" checked="false" label="Annotate multiple charged ions" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
-                           <param name="library_multiple_charged_ions" type="data" optional="true" format="tsv" label="Library multiple charged ions" help="" />
+                           <param name="library_multiple_charged_ions" type="data" optional="true" format="tsv,tabular" label="Library multiple charged ions" help="" />
                         </when>
                         <when value="false" />
                     </conditional>
@@ -206,7 +206,7 @@
                             <param name="max_mz" value="500" type="integer" label="Maximum m/z" help="" />
                         </when>
                         <when value="file">
-                            <param name="reference_file" type="data" format="tsv" label="Library molecular formulae" help="" />
+                            <param name="reference_file" type="data" format="tsv,tabular" label="Library molecular formulae" help="" />
                         </when>
                     </conditional>
                 </when>
@@ -229,7 +229,7 @@
                            </param>
                         </when>
                         <when value="file">
-                            <param name="reference_file" type="data" format="tsv" label="Library compounds" help="" />
+                            <param name="reference_file" type="data" format="tsv,tabular" label="Library compounds" help="" />
                         </when>
                     </conditional>
                 </when>
