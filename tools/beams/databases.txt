@@ -2,7 +2,6 @@ description	database_name
 PlantCyc - ChlamyCyc (Chlamydomonas reinhardtii) | 2018-07-02 | v1	biocyc_chlamycyc_20180702_v1
 CHEBI - Full database | rel169 | v1	chebi_full_rel169_v1
 CHEBI -  3stars records | rel169 | v1	chebi_3star_rel169_v1
-FooDB - Food Component Database | v1.0 | v1	foodb_full_v1_0_v1
 HMDB - The Urine Metabolome Database | v4.0 | v1	hmdb_urine_v4_0_v1
 HMDB - The Serum Metabolome Database | v4.0 | v1	hmdb_serum_v4_0_v1
 HMDB - The cerebrospinal fluid (CSF) Metabolome Database | v4.0 | v1	hmdb_csf_v4_0_v1
