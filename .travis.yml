@@ -3,12 +3,11 @@ python:
  - "2.7"
 
 before_install:
- - sudo apt-get install -y python-virtualenv
- - virtualenv planemo-venv
- - . planemo-venv/bin/activate
  - pip install --upgrade pip setuptools
  - pip install planemo
+ - planemo --version
 
 script:
  - planemo lint ${TRAVIS_BUILD_DIR}/tools/beamspy
- - planemo test --conda_auto_init --conda_auto_install --conda_ensure_channels computational-metabolomics,iuc,conda-forge,bioconda,defaults --galaxy_branch release_19.09 --no_cache_galaxy ${TRAVIS_BUILD_DIR}/tools/beamspy
+ - planemo test --conda_ensure_channels computational-metabolomics,iuc,bioconda,conda-forge,defaults ${TRAVIS_BUILD_DIR}/tools/beamspy
+ 
