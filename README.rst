@@ -1,8 +1,8 @@
-BEAMS for Galaxy
+BEAMSpy for Galaxy
 ========================
 |Build Status (Travis)| |Git| |Bioconda| |License|
 
-Galaxy tools for Python package BEAMS: 
+Galaxy tools for Python package BEAMSpy: 
 
 Galaxy
 ------
@@ -16,8 +16,8 @@ Developers & Contributors
 
 Bugs
 ----
-Please report any bugs that you find `here <https://github.com/computational-metabolomics/beams-galaxy/issues>`_.
-Or fork the repository on `GitHub <https://github.com/computational-metabolomics/beams-galaxy/>`_
+Please report any bugs that you find `here <https://github.com/computational-metabolomics/beamspy-galaxy/issues>`_.
+Or fork the repository on `GitHub <https://github.com/computational-metabolomics/beamspy-galaxy/>`_
 and create a pull request (PR). We welcome all contributions, and we
 will help you to make the PR if you are new to `git`.
 
@@ -28,17 +28,17 @@ Changes
 
 License
 -------
-Released under the GNU General Public License v3.0 (see `LICENSE file <https://github.com/computational-metabolomics/beams-galaxy/blob/master/LICENSE>`_)
+Released under the GNU General Public License v3.0 (see `LICENSE file <https://github.com/computational-metabolomics/beamspy-galaxy/blob/master/LICENSE>`_)
 
 
-.. |Build Status (Travis)| image:: https://img.shields.io/travis/computational-metabolomics/beams-galaxy.svg?style=flat&maxAge=3600&label=Travis-CI
-   :target: https://travis-ci.org/computational-metabolomics/beams-galaxy
+.. |Build Status (Travis)| image:: https://img.shields.io/travis/computational-metabolomics/beamspy-galaxy.svg?style=flat&maxAge=3600&label=Travis-CI
+   :target: https://travis-ci.org/computational-metabolomics/beamspy-galaxy
 
 .. |Git| image:: https://img.shields.io/badge/repository-GitHub-blue.svg?style=flat&maxAge=3600
-   :target: https://github.com/computational-metabolomics/beams
+   :target: https://github.com/computational-metabolomics/beamspy
 
 .. |Bioconda| image:: https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat&maxAge=3600
-   :target: http://bioconda.github.io/recipes/beams/README.html
+   :target: http://bioconda.github.io/recipes/beamspy/README.html
 
-.. |License| image:: https://img.shields.io/pypi/l/beams.svg?style=flat&maxAge=3600
+.. |License| image:: https://img.shields.io/pypi/l/beamspy.svg?style=flat&maxAge=3600
    :target: https://www.gnu.org/licenses/gpl-3.0.html
