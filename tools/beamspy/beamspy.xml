@@ -1,14 +1,14 @@
-<tool id="beams" name="BEAMS" version="0.1.0">
+<tool id="beamspy" name="BEAMSpy" version="1.0.0+galaxy0">
     <description> - Birmingham mEtabolite Annotation for Mass SpectroMetry</description>
     <requirements>
-        <requirement type="package" version="0.1.0">beams</requirement>
+        <requirement type="package" version="1.0.0">beamspy</requirement>
     </requirements>
     <code file="get_databases.py" />
     <command detect_errors="exit_code"><![CDATA[
         echo ""
         #if $group_features.condi.flag == "true"
             &&
-            python -m beams group-features
+            python -m beamspy group-features
                 --peaklist "$peaklist"
                 --intensity-matrix "$intensity_matrix"
                 --gml-file "$output_graph"
@@ -22,7 +22,7 @@
 
         #if $annotate_peak_patterns.condi.flag == "true"
             &&
-            python -m beams annotate-peak-patterns
+            python -m beamspy annotate-peak-patterns
                 --peaklist "$peaklist"
                 #if $intensity_matrix
                     --intensity-matrix "$intensity_matrix"
@@ -56,7 +56,7 @@
 
         #if $annotate_molecular_formulae.condi.flag == "true"
             &&
-            python -m beams annotate-mf
+            python -m beamspy annotate-mf
                 --peaklist "$peaklist"
                 #if $intensity_matrix
                     --intensity-matrix "$intensity_matrix"
@@ -84,7 +84,7 @@
 
             #for $db_name in $db_names
                 &&
-                python -m beams annotate-compounds
+                python -m beamspy annotate-compounds
                     --peaklist "$peaklist"
                     #if $intensity_matrix
                         --intensity-matrix "$intensity_matrix"
@@ -107,7 +107,7 @@
         #for $format in [str($summary.mr_mc), str($summary.sr_mc), str($summary.sr_sc)]
             #if $format != ""
                 &&
-                python -m beams summary-results
+                python -m beamspy summary-results
                     --peaklist "$peaklist"
                     #if $intensity_matrix
                         --intensity-matrix "$intensity_matrix"
@@ -361,8 +361,8 @@
         </test>
     </tests>
     <help>
-BEAMS - Birmingham mEtabolite Annotation for Mass Spectrometry
-===============================================================
+Galaxy tool wrapper for BEAMSpy
+=================================
 
 ..
 
@@ -395,7 +395,7 @@ Output file(s)
 Github respository (source code)
 --------------------------------
 
-https://github.com/computational-metabolomics/beams/
+https://github.com/computational-metabolomics/beamspy/
 
 Developers and contributors
 ---------------------------
