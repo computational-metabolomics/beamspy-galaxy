@@ -1,24 +1,17 @@
-categories: [Metabolomics]
-description: "[Metabolomics][LC-MS][DIMS] BEAMS: "
+categories:
+  - Metabolomics
+description: "[Metabolomics][LC-MS][DIMS][Metabolite Annotation] BEAMSpy: Birmingham mEtabolite Annotation for Mass SpectroMetry (Python package)"
 long_description: |
-  DIMSpy: Tools for processing, filtering and analysing direct-infusion mass spectrometry-based metabolomics and lipidomics data"
+  BEAMSpy: Birmingham mEtabolite Annotation for Mass SpectroMetry (Python package)
 
-  Repository-Maintainer: 
+  Repository-Maintainer: Ralf Weber (r.j.weber@bham.ac.uk)
 
-  https://github.com/computational-metabolomics/beams
-name: beams
-owner: rjmweber
-remote_repository_url: https://github.com/computational-metabolomics/beams-galaxy
+  https://github.com/computational-metabolomics/beamspy
+name: beamspy
+owner: computational-metabolomics
+remote_repository_url: https://github.com/computational-metabolomics/beamspy-galaxy
+homepage_url: https://github.com/computational-metabolomics/beamspy-galaxy
 type: unrestricted
 auto_tool_repositories:
   name_template: "{{ tool_id }}"
-  description_template: "[Metabolomics][LC-MS][DIMS] BEAMS - {{ tool_name }}: {{ description }}"
-suite:
-  name: "suite_dimspy"
-  description: "BEAMS: "
-  long_description: |
-    BEAMS: "
-
-    Repository-Maintainer: 
-
-    https://github.com/computational-metabolomics/beams
+  description_template: "[Metabolomics][LC-MS][DIMS][Metabolite Annotation] BEAMSpy: {{ tool_name }} {{ description }}"
