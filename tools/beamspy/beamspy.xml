@@ -63,7 +63,7 @@
                 #end if
                 --db "$output_sqlite"
                 #if $annotate_molecular_formulae.condi.condi.source == "url"
-                    --db-mf "http://multiomics-int.cs.bham.ac.uk"
+                    --db-mf "https://mfdb.bham.ac.uk"
                     --max-mz $annotate_molecular_formulae.condi.condi.max_mz
                 #end if
                 #if $annotate_molecular_formulae.condi.condi.source == "file"
@@ -199,7 +199,7 @@
                     <param name="ppm" type="float" value="5.0" label="Ppm error tolerance" help="Maximum tolerated m/z deviation in parts per million (ppm)." />
                     <conditional name="condi">
                         <param name="source" type="select" label="Source">
-                            <option value="url" selected="True">http://multiomics-int.cs.bham.ac.uk</option>
+                            <option value="url" selected="True">https://mfdb.bham.ac.uk</option>
                             <option value="file">Tab-delimited text file</option>
                         </param>
                         <when value="url">
