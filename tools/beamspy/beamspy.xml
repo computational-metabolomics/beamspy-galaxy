@@ -50,7 +50,7 @@
                 #end if
                 #if $annotate_peak_patterns.condi.oligomers_condi.flag == "true"
                     --oligomers
-                    --max_monomer_units $annotate_peak_patterns.condi.oligomers_condi.max_monomer_units
+                    --max-monomer-units $annotate_peak_patterns.condi.oligomers_condi.max_monomer_units
                 #end if
         #end if
 
