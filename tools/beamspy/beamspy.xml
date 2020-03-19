@@ -33,6 +33,9 @@
                 --db "$output_sqlite"
                 --ion-mode $ion_mode
                 --ppm $annotate_peak_patterns.condi.ppm
+                #if $library_adducts
+                    --adducts-library $library_adducts
+                #end if
                 #if $annotate_peak_patterns.condi.annotate_adducts_flag == "true"
                     --adducts
                 #end if
