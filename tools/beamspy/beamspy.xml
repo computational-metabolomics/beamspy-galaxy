@@ -1,105 +1,108 @@
-<tool id="beamspy" name="BEAMSpy" version="1.0.0+galaxy0">
+<tool id="beamspy" name="BEAMSpy" version="1.1.0+galaxy0">
     <description> - Birmingham mEtabolite Annotation for Mass SpectroMetry</description>
     <requirements>
-        <requirement type="package" version="1.0.0">beamspy</requirement>
+        <requirement type="package" version="1.1.0">beamspy</requirement>
     </requirements>
     <code file="get_databases.py" />
     <command detect_errors="exit_code"><![CDATA[
-        echo ""
-        #if $group_features.condi.flag == "true"
+        echo ''
+        #if $group_features.condi.flag == 'true'
             &&
             python -m beamspy group-features
-                --peaklist "$peaklist"
-                --intensity-matrix "$intensity_matrix"
-                --gml-file "$output_graph"
-                --db "$output_sqlite"
+                --peaklist '$peaklist'
+                --intensity-matrix '$intensity_matrix'
+                --gml-file '$output_graph'
+                --db '$output_sqlite'
                 --max-rt-diff $group_features.condi.max_rt_diff
                 --method $group_features.condi.grouping_method
                 --coeff-threshold $group_features.condi.coefficient_threshold
                 --pvalue-threshold $group_features.condi.pvalue_threshold
-                --ncpus \${GALAXY_SLOTS:-4}
+                --ncpus \${GALAXY_SLOTS:-1}
         #end if
 
-        #if $annotate_peak_patterns.condi.flag == "true"
+        #if $annotate_peak_patterns.condi.flag == 'true'
             &&
             python -m beamspy annotate-peak-patterns
-                --peaklist "$peaklist"
+                --peaklist '$peaklist'
                 #if $intensity_matrix
-                    --intensity-matrix "$intensity_matrix"
+                    --intensity-matrix '$intensity_matrix'
                 #end if
-                #if $group_features.condi.flag == "true"
-                    --gml-file "$output_graph"
+                #if $group_features.condi.flag == 'true'
+                    --gml-file '$output_graph'
                 #end if
-                --db "$output_sqlite"
+                --db '$output_sqlite'
                 --ion-mode $ion_mode
                 --ppm $annotate_peak_patterns.condi.ppm
                 #if $library_adducts
                     --adducts-library $library_adducts
                 #end if
-                #if $annotate_peak_patterns.condi.annotate_adducts_flag == "true"
+                #if $annotate_peak_patterns.condi.annotate_adducts_flag == 'true'
                     --adducts
                 #end if
-                #if $annotate_peak_patterns.condi.isotopes_condi.flag == "true"
+                #if $annotate_peak_patterns.condi.isotopes_condi.flag == 'true'
                     --isotopes
                     #if $annotate_peak_patterns.condi.isotopes_condi.library_isotopes
-                        --isotopes-library "$annotate_peak_patterns.condi.isotopes_condi.library_isotopes"
+                        --isotopes-library '$annotate_peak_patterns.condi.isotopes_condi.library_isotopes'
                     #end if
                 #end if
-                #if $annotate_peak_patterns.condi.multiple_charged_ions_condi.flag == "true"
-                    --multiple-charged-ions
-                    #if $annotate_peak_patterns.condi.multiple_charged_ions_condi.library_multiple_charged_ions
-                        --multiple-charged-ions-library "$annotate_peak_patterns.condi.multiple_charged_ions_condi.library_multiple_charged_ions"
+                #if $annotate_peak_patterns.condi.neutral_losses_condi.flag == 'true'
+                    --neutral-losses
+                    #if $annotate_peak_patterns.condi.neutral_losses_condi.library_neutral_losses
+                        --neutral-losses-library '$annotate_peak_patterns.condi.neutral_losses_condi.library_neutral_losses'
                     #end if
                 #end if
-                #if $annotate_peak_patterns.condi.oligomers_condi.flag == "true"
+                #if $annotate_peak_patterns.condi.oligomers_condi.flag == 'true'
                     --oligomers
                     --max-monomer-units $annotate_peak_patterns.condi.oligomers_condi.max_monomer_units
                 #end if
         #end if
 
-        #if $annotate_molecular_formulae.condi.flag == "true"
+        #if $annotate_molecular_formulae.condi.flag == 'true'
             &&
             python -m beamspy annotate-mf
-                --peaklist "$peaklist"
+                --peaklist '$peaklist'
                 #if $intensity_matrix
-                    --intensity-matrix "$intensity_matrix"
+                    --intensity-matrix '$intensity_matrix'
                 #end if
-                --db "$output_sqlite"
-                #if $annotate_molecular_formulae.condi.condi.source == "url"
-                    --db-mf "https://mfdb.bham.ac.uk"
+                --db '$output_sqlite'
+                #if $annotate_molecular_formulae.condi.condi.source == 'url'
+                    --db-mf 'https://mfdb.bham.ac.uk'
                     --max-mz $annotate_molecular_formulae.condi.condi.max_mz
                 #end if
-                #if $annotate_molecular_formulae.condi.condi.source == "file"
-                    --db-mf "$annotate_molecular_formulae.condi.condi.reference_file"
+                #if $annotate_molecular_formulae.condi.condi.source == 'file'
+                    --db-mf '$annotate_molecular_formulae.condi.condi.reference_file'
                 #end if
+                $annotate_molecular_formulae.condi.use_patterns 
                 --ion-mode $ion_mode
                 --ppm $annotate_molecular_formulae.condi.ppm
                 #if $library_adducts
-                    --adducts-library "$library_adducts"
+                    --adducts-library '$library_adducts'
                 #end if
         #end if
-        #if $annotate_compounds.condi.flag == "true"
-            #if $annotate_compounds.condi.condi.source == "databases"
-                #set $db_names = str($annotate_compounds.condi.condi.db_name).split(",")
-            #else if $annotate_compounds.condi.condi.source == "file"
-                #set $db_names = ["dummy"]
+        #if $annotate_compounds.condi.flag == 'true'
+            #if $annotate_compounds.condi.condi.source == 'databases'
+                #set $db_names = str($annotate_compounds.condi.condi.db_name).split(',')
+            #else if $annotate_compounds.condi.condi.source == 'file'
+                #set $db_names = ['dummy']
             #end if
 
             #for $db_name in $db_names
                 &&
                 python -m beamspy annotate-compounds
-                    --peaklist "$peaklist"
+                    --peaklist '$peaklist'
                     #if $intensity_matrix
-                        --intensity-matrix "$intensity_matrix"
+                        --intensity-matrix '$intensity_matrix'
                     #end if
-                    --db "$output_sqlite"
-                    #if $annotate_compounds.condi.condi.source == "databases"
-                        --db-name "$db_name"
+                    --db '$output_sqlite'
+                    #if $annotate_compounds.condi.condi.source == 'databases'
+                        --db-compounds ''
+                        --db-name '$db_name'
                     #end if
-                    #if $annotate_compounds.condi.condi.source == "file"
-                        --db-compounds "$annotate_compounds.condi.condi.reference_file"
-                        --db-name "reference_file"
+                    #if $annotate_compounds.condi.condi.source == 'file'
+                        --db-compounds '$annotate_compounds.condi.condi.reference_file'
+                        --db-name 'reference_file'
                     #end if
+                    $annotate_compounds.condi.use_patterns 
                     --ion-mode $ion_mode
                     --ppm $annotate_compounds.condi.ppm
                     #if $library_adducts
@@ -108,31 +111,31 @@
             #end for
         #end if
         #for $format in [str($summary.mr_mc), str($summary.sr_mc), str($summary.sr_sc)]
-            #if $format != ""
+            #if $format != ''
                 &&
                 python -m beamspy summary-results
-                    --peaklist "$peaklist"
+                    --peaklist '$peaklist'
                     #if $intensity_matrix
-                        --intensity-matrix "$intensity_matrix"
+                        --intensity-matrix '$intensity_matrix'
                     #end if
-                    --db "$output_sqlite"
+                    --db '$output_sqlite'
 
-                    #if $format == "multiple"
-                        --output "$output_summary_mr_mc"
-                    #else if $format == "--single-row"
-                        --output "$output_summary_sr_mc"
-                    #else if $format == "--single-row --single-column"
-                        --output "$output_summary_sr_sc"
+                    #if $format == 'multiple'
+                        --output '$output_summary_mr_mc'
+                    #else if $format == '--single-row'
+                        --output '$output_summary_sr_mc'
+                    #else if $format == '--single-row --single-column'
+                        --output '$output_summary_sr_sc'
                     #end if
                     #if $output_charts
-                        --pdf "$output_charts"
+                        --pdf '$output_charts'
                         #set $output_charts = None
                     #end if
                     --sep tab
-                    #if $format == "--single-row --single-column" or $format == "--single-row"
+                    #if $format == '--single-row --single-column' or $format == '--single-row'
                         $format
                     #end if
-                    #if $summary.convert_rt != "skip"
+                    #if $summary.convert_rt != 'skip'
                         --convert-rt $summary.convert_rt
                     #end if
             #end if
@@ -177,10 +180,10 @@
                         </when>
                         <when value="false" />
                     </conditional>
-                    <conditional name="multiple_charged_ions_condi">
-                        <param name="flag" type="boolean" checked="false" label="Annotate multiple charged ions" help="" truevalue="true" falsevalue="false" />
+                    <conditional name="neutral_losses_condi">
+                        <param name="flag" type="boolean" checked="false" label="Annotate neutral losses" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
-                           <param name="library_multiple_charged_ions" type="data" optional="true" format="tsv,tabular" label="Library multiple charged ions" help="" />
+                           <param name="library_neutral_losses" type="data" optional="true" format="tsv,tabular" label="Library neutral losses" help="" />
                         </when>
                         <when value="false" />
                     </conditional>
@@ -200,6 +203,7 @@
                 <param name="flag" type="boolean" checked="false" label=" " help="" truevalue="true" falsevalue="false" />
                 <when value="true">
                     <param name="ppm" type="float" value="5.0" label="Ppm error tolerance" help="Maximum tolerated m/z deviation in parts per million (ppm)." />
+                    <param name="use_patterns" type="boolean" checked="true" label="Use/Apply peak patterns" help="Use/Apply Peak Patterns to filter annotations" truevalue="" falsevalue="--skip-patterns" />
                     <conditional name="condi">
                         <param name="source" type="select" label="Source">
                             <option value="url" selected="True">https://mfdb.bham.ac.uk</option>
@@ -211,6 +215,7 @@
                         <when value="file">
                             <param name="reference_file" type="data" format="tsv,tabular" label="Library molecular formulae" help="" />
                         </when>
+                        
                     </conditional>
                 </when>
                 <when value="false" />
@@ -221,6 +226,7 @@
                 <param name="flag" type="boolean" checked="false" label=" " help="" truevalue="true" falsevalue="false" />
                 <when value="true">
                     <param name="ppm" type="float" value="5.0" label="Ppm error tolerance" help="Maximum tolerated m/z deviation in parts per million (ppm)." />
+                    <param name="use_patterns" type="boolean" checked="true" label="Use/Apply peak patterns" help="Use/Apply Peak Patterns to filter annotations" truevalue="" falsevalue="--skip-patterns" />
                     <conditional name="condi">
                         <param name="source" type="select" label="Source" refresh_on_change="true">
                             <option value="databases" selected="True">Compound databases</option>
@@ -255,108 +261,171 @@
             <filter>group_features["condi"]["flag"] is True</filter>
         </data>
         <data name="output_sqlite" format="sqlite" label="${tool.name} on ${on_string}: SQLite database" />
-        <data name="output_summary_mr_mc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Multiple rows and separate columns)">
+        <data name="output_summary_mr_mc" format="txt" label="${tool.name} on ${on_string}: Summary table (Multiple rows and separate columns)">
             <filter>summary["mr_mc"] is True</filter>
         </data>
-        <data name="output_summary_sr_mc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Single row and separate columns)">
+        <data name="output_summary_sr_mc" format="txt" label="${tool.name} on ${on_string}: Summary table (Single row and separate columns)">
             <filter>summary["sr_mc"] is True</filter>
         </data>
-        <data name="output_summary_sr_sc" format="tsv" label="${tool.name} on ${on_string}: Summary table (Single row and merged columns)">
+        <data name="output_summary_sr_sc" format="txt" label="${tool.name} on ${on_string}: Summary table (Single row and merged columns)">
             <filter>summary["sr_sc"] is True</filter>
         </data>
         <data name="output_charts" format="pdf" label="${tool.name} on ${on_string}: Summary charts" />
     </outputs>
     <tests>
         <test>
-            <param name="peaklist" value="variableMetadata.txt"/>
-            <param name="intensity_matrix" value="dataMatrix.txt"/>
+            <param name="peaklist" value="peaklist_lcms_pos_theoretical.txt"/>
+            <param name="intensity_matrix" value="dataMatrix_lcms_pos_theoretical.txt"/>
             <param name="library_adducts" value="adducts.txt"/>
-
-            <param name="group_features|condi|flag" value="true"/>
-            <param name="group_features|condi|intensity_matrix" value="dataMatrix.txt"/>
-
-            <param name="annotate_peak_patterns|condi|flag" value="true"/>
-
-            <param name="annotate_peak_patterns|condi|annotate_adducts_flag" value="true"/>
-            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|flag" value="true"/>
-            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|library_isotopes" value="isotopes.txt"/>
-
-            <param name="annotate_molecular_formulae|condi|flag" value="false"/>
-            <param name="annotate_compounds|condi|flag" value="false"/>
-
-            <param name="summary|mr_mc" value="multiple"/>
-            <param name="summary|rt_convert" value="skip"/>
-
+            <conditional name="group_features">
+                <conditional name="condi">
+                    <param name="flag" value="true"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_peak_patterns">
+                <conditional name="condi">
+                    <param name="flag" value="true"/>
+                    <param name="annotate_adducts_flag" value="true"/>
+                    <conditional name="isotopes_condi">
+                        <param name="flag" value="true"/>
+                        <param name="library_isotopes" value="isotopes.txt"/>
+                    </conditional>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_molecular_formulae">
+                <conditional name="condi">
+                    <param name="flag" value="false"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_compounds">
+                <conditional name="condi">
+                    <param name="flag" value="false"/>
+                </conditional>
+            </conditional>
+            <conditional name="summary">
+                <param name="summary|mr_mc" value="multiple"/>
+                <param name="rt_convert" value="skip"/>
+            </conditional>
             <output name="output_graph" file="output_graph_pp.gml" ftype="txt" compare="sim_size"/>
             <output name="output_sqlite" file="output_db_pp.sqlite" ftype="sqlite" compare="sim_size"/>
             <output name="output_summary_mr_mc" file="summary_mr_mc_pp.tsv" ftype="tsv" />
             <output name="output_charts" file="charts_pp.pdf" ftype="pdf" compare="sim_size"/>
         </test>
         <test>
-            <param name="peaklist" value="variableMetadata_intensity.txt"/>
+            <param name="peaklist" value="peaklist_dims_pos_theoretical.txt"/>
             <param name="library_adducts" value="adducts.txt"/>
-
-            <param name="group_features|condi|flag" value="false"/>
-            <param name="annotate_peak_patterns|condi|flag" value="false"/>
-            <param name="annotate_molecular_formulae|condi|flag" value="false"/>
-            <param name="annotate_compounds|condi|flag" value="true"/>
-
-            <param name="annotate_compounds|condi|condi|source" value="databases"/>
-            <param name="annotate_compounds|condi|condi|db_name" value="hmdb_full_v4_0_v1"/>
-            <param name="annotate_compounds|condi|ppm" value="3.0"/>
-            
-            <param name="summary|sr_mc" value="--single-row"/>
-            <param name="summary|rt_convert" value="skip"/>
-
+            <conditional name="group_features">
+                <conditional name="condi">
+                    <param name="flag" value="false"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_peak_patterns">
+                <conditional name="condi">
+                    <param name="flag" value="false"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_molecular_formulae">
+                <conditional name="condi">
+                    <param name="flag" value="false"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_compounds">
+                <conditional name="condi">
+                    <param name="flag" value="true"/>
+                    <conditional name="condi">
+                        <param name="source" value="databases"/>
+                        <param name="db_name" value="hmdb_full_v4_0_20200909_v1"/>
+                    </conditional>
+                    <param name="ppm" value="3.0"/>
+                </conditional>
+            </conditional>
+            <conditional name="summary">
+                <param name="sr_mc" value="--single-row"/>
+                <param name="rt_convert" value="skip"/>
+            </conditional>
             <output name="output_sqlite" file="output_db_ac.sqlite" ftype="sqlite" compare="sim_size"/>
             <output name="output_summary_sr_mc" file="summary_sr_mc_ac.tsv" ftype="tsv" />
             <output name="output_charts" file="charts_ac.pdf" ftype="pdf" compare="sim_size"/>
         </test>
         <test>
-            <param name="peaklist" value="variableMetadata_intensity.txt"/>
+            <param name="peaklist" value="peaklist_dims_pos_theoretical.txt"/>
             <param name="library_adducts" value="adducts.txt"/>
-
-            <param name="group_features|condi|flag" value="false"/>
-            <param name="annotate_peak_patterns|condi|flag" value="false"/>
-            <param name="annotate_molecular_formulae|condi|flag" value="false"/>
-            <param name="annotate_compounds|condi|flag" value="true"/>
-
-            <param name="annotate_compounds|condi|condi|source" value="databases"/>
-            <param name="annotate_compounds|condi|condi|db_name" value="hmdb_urine_v4_0_v1,hmdb_serum_v4_0_v1"/>
-            <param name="annotate_compounds|condi|ppm" value="3.0"/>
-
-            <param name="summary|sr_mc" value="--single-row"/>
-            <param name="summary|rt_convert" value="skip"/>
-
+            <conditional name="group_features">
+                <conditional name="condi">
+                    <param name="flag" value="false"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_peak_patterns">
+                <conditional name="condi">
+                    <param name="flag" value="false"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_molecular_formulae">
+                <conditional name="condi">
+                    <param name="flag" value="false"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_compounds">
+                <conditional name="condi">
+                    <param name="flag" value="true"/>
+                    <conditional name="condi">
+                        <param name="source" value="databases"/>
+                        <param name="db_name" value="hmdb_urine_v4_0_20200910_v1,hmdb_full_v4_0_20200909_v1"/>
+                    </conditional>
+                    <param name="ppm" value="3.0"/>
+                </conditional>
+            </conditional>
+            <conditional name="summary">
+                <param name="sr_mc" value="--single-row"/>
+                <param name="rt_convert" value="skip"/>
+            </conditional>
             <output name="output_sqlite" file="output_db_2dbs_ac.sqlite" ftype="sqlite" compare="sim_size"/>
             <output name="output_summary_sr_mc" file="summary_2dbs_sr_mc_ac.tsv" ftype="tsv" />
             <output name="output_charts" file="charts_2dbs_ac.pdf" ftype="pdf" compare="sim_size"/>
         </test>
         <test>
-            <param name="peaklist" value="variableMetadata.txt"/>
-            <param name="intensity_matrix" value="dataMatrix.txt"/>
+            <param name="peaklist" value="peaklist_lcms_pos_theoretical.txt"/>
+            <param name="intensity_matrix" value="dataMatrix_lcms_pos_theoretical.txt"/>
             <param name="library_adducts" value="adducts.txt"/>
-
-            <param name="group_features|condi|flag" value="true"/>
-            <param name="group_features|condi|intensity_matrix" value="dataMatrix.txt"/>
-
-            <param name="annotate_peak_patterns|condi|flag" value="true"/>
-
-            <param name="annotate_peak_patterns|condi|annotate_adducts_flag" value="true"/>
-            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|flag" value="true"/>
-            <param name="annotate_peak_patterns|condi|annotate_isotopes_condi|library_isotopes" value="isotopes.txt"/>
-
-            <param name="annotate_molecular_formulae|condi|flag" value="false"/>
-            <param name="annotate_compounds|condi|flag" value="true"/>
-
-            <param name="annotate_compounds|condi|condi|source" value="databases"/>
-            <param name="annotate_compounds|condi|condi|db_name" value="hmdb_full_v4_0_v1"/>
-            <param name="annotate_compounds|condi|ppm" value="3.0"/>
-
-            <param name="summary|sr_mc" value="--single-row"/>
-            <param name="summary|sr_sc" value="--single-row --single-column"/>
-            <param name="summary|rt_convert" value="skip"/>
-
+            <conditional name="group_features">
+                <conditional name="condi">
+                    <param name="flag" value="true"/>
+                    <param name="intensity_matrix" value="dataMatrix.txt"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_peak_patterns">
+                <conditional name="condi">
+                    <param name="flag" value="true"/>
+                    <param name="annotate_adducts_flag" value="true"/>
+                    <conditional name="isotopes_condi">
+                        <param name="flag" value="true"/>
+                        <param name="library_isotopes" value="isotopes.txt"/>
+                    </conditional>
+                    <conditional name="oligomers_condi">
+                        <param name="flag" value="True"/>
+                    </conditional>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_molecular_formulae">
+                <conditional name="condi">
+                    <param name="flag" value="false"/>
+                </conditional>
+            </conditional>
+            <conditional name="annotate_compounds">
+                <conditional name="condi">
+                    <param name="flag" value="true"/>
+                    <conditional name="condi">
+                        <param name="source" value="databases"/>
+                        <param name="db_name" value="hmdb_full_v4_0_20200909_v1"/>
+                    </conditional>
+                    <param name="ppm" value="3.0"/>
+                </conditional>
+            </conditional>
+            <conditional name="summary">
+                <param name="sr_mc" value="--single-row"/>
+                <param name="sr_sc" value="--single-row --single-column"/>
+                <param name="rt_convert" value="skip"/>
+            </conditional>
             <output name="output_graph" file="output_graph_pp_ac.gml" ftype="txt" compare="sim_size"/>
             <output name="output_sqlite" file="output_db_pp_ac.sqlite" ftype="sqlite" compare="sim_size"/>
             <output name="output_summary_sr_sc" file="summary_sr_sc_pp_ac.tsv" ftype="tsv" />
