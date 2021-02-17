@@ -308,7 +308,7 @@
             </conditional>
             <output name="output_graph" file="output_graph_pp.gml" ftype="txt" compare="sim_size"/>
             <output name="output_sqlite" file="output_db_pp.sqlite" ftype="sqlite" compare="sim_size"/>
-            <output name="output_summary_mr_mc" file="summary_mr_mc_pp.tsv" ftype="tsv" />
+            <output name="output_summary_mr_mc" file="summary_mr_mc_pp.txt" ftype="txt" />
             <output name="output_charts" file="charts_pp.pdf" ftype="pdf" compare="sim_size"/>
         </test>
         <test>
@@ -344,7 +344,7 @@
                 <param name="rt_convert" value="skip"/>
             </conditional>
             <output name="output_sqlite" file="output_db_ac.sqlite" ftype="sqlite" compare="sim_size"/>
-            <output name="output_summary_sr_mc" file="summary_sr_mc_ac.tsv" ftype="tsv" />
+            <output name="output_summary_sr_mc" file="summary_sr_mc_ac.txt" ftype="txt" />
             <output name="output_charts" file="charts_ac.pdf" ftype="pdf" compare="sim_size"/>
         </test>
         <test>
@@ -380,7 +380,7 @@
                 <param name="rt_convert" value="skip"/>
             </conditional>
             <output name="output_sqlite" file="output_db_2dbs_ac.sqlite" ftype="sqlite" compare="sim_size"/>
-            <output name="output_summary_sr_mc" file="summary_2dbs_sr_mc_ac.tsv" ftype="tsv" />
+            <output name="output_summary_sr_mc" file="summary_2dbs_sr_mc_ac.txt" ftype="txt" />
             <output name="output_charts" file="charts_2dbs_ac.pdf" ftype="pdf" compare="sim_size"/>
         </test>
         <test>
@@ -428,7 +428,7 @@
             </conditional>
             <output name="output_graph" file="output_graph_pp_ac.gml" ftype="txt" compare="sim_size"/>
             <output name="output_sqlite" file="output_db_pp_ac.sqlite" ftype="sqlite" compare="sim_size"/>
-            <output name="output_summary_sr_sc" file="summary_sr_sc_pp_ac.tsv" ftype="tsv" />
+            <output name="output_summary_sr_sc" file="summary_sr_sc_pp_ac.txt" ftype="txt" />
             <output name="output_charts" file="charts_pp_ac.pdf" ftype="pdf" compare="sim_size"/>
         </test>
     </tests>
