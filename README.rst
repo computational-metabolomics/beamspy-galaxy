@@ -2,7 +2,7 @@ Galaxy tool wrappers for BEAMSpy - Birmingham mEtabolite Annotation for Mass Spe
 ==========================================================================================================
 |Build Status (last commit)| |Build Status (weekly global test)| |galaxy-eu| |Git| |Bioconda| |License|
 
-Galaxy tool wrapper for Python package BEAMSpy
+Galaxy tool wrapper for Python package BEAMSpy - Birmingham mEtabolite Annotation for Mass Spectrometry (Python package)
 
 Source code: https://github.com/computational-metabolomics/beamspy
 
@@ -21,9 +21,11 @@ Galaxy
 
 Credits
 -------
-
- - Ralf J. M. Weber (r.j.weber@bham.ac.uk) - Main Developer
- - `**Authors and contributors** <https://more.bham.ac.uk/beams/team/>`__
+ - `Team (University of Birmingham and EMBL-EBI) <https://more.bham.ac.uk/beams/team/>`__
+ 
+**Code base**
+ - Ralf J. M. Weber (r.j.weber@bham.ac.uk) - `University of Birmingham (UK) <https://www.birmingham.ac.uk/staff/profiles/biosciences/weber-ralf.aspx>`__
+ - Venkata (Chandu) Chandrasekhar (European Bioinformatics Institute | EMBL-EBI)
 
 
 Bugs
