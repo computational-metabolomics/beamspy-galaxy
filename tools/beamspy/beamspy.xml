@@ -1,7 +1,7 @@
-<tool id="beamspy" name="BEAMSpy" version="1.0.0+galaxy0">
+<tool id="beamspy" name="BEAMSpy" version="1.1.0">
     <description> - Birmingham mEtabolite Annotation for Mass SpectroMetry</description>
     <requirements>
-        <requirement type="package" version="1.0.0">beamspy</requirement>
+        <requirement type="package" version="1.1.0">beamspy</requirement>
     </requirements>
     <code file="get_databases.py" />
     <command detect_errors="exit_code"><![CDATA[
@@ -35,11 +35,20 @@
                 --ppm $annotate_peak_patterns.condi.ppm
                 #if $annotate_peak_patterns.condi.annotate_adducts_flag == "true"
                     --adducts
+                    #if $library_adducts
+                       --adducts-library "$library_adducts"
+                    #end if
                 #end if
                 #if $annotate_peak_patterns.condi.isotopes_condi.flag == "true"
                     --isotopes
                     #if $annotate_peak_patterns.condi.isotopes_condi.library_isotopes
                         --isotopes-library "$annotate_peak_patterns.condi.isotopes_condi.library_isotopes"
+                    #end if
+                #end if
+                #if $annotate_peak_patterns.condi.neutral_losses_condi.flag == "true"
+                    --neutral-losses
+                    #if $annotate_peak_patterns.condi.neutral_losses_condi.library_neutral_losses
+                        --neutral-losses-library "$annotate_peak_patterns.condi.neutral_losses_condi.library_neutral_losses"
                     #end if
                 #end if
                 #if $annotate_peak_patterns.condi.multiple_charged_ions_condi.flag == "true"
@@ -174,6 +183,13 @@
                         </when>
                         <when value="false" />
                     </conditional>
+                    <conditional name="neutral_losses_condi">
+                        <param name="flag" type="boolean" checked="true" label="Annotate Neutral Losses" help="" truevalue="true" falsevalue="false" />
+                        <when value="true">
+                           <param name="library_neutral_losses" type="data" optional="true" format="tsv,tabular" label="Library Neutral Losses" help="" />
+                        </when>
+                        <when value="false" />
+                    </conditional>
                     <conditional name="multiple_charged_ions_condi">
                         <param name="flag" type="boolean" checked="false" label="Annotate multiple charged ions" help="" truevalue="true" falsevalue="false" />
                         <when value="true">
@@ -225,7 +241,7 @@
                         </param>
                         <when value="databases">
                            <param name="db_name" type="select" label="Select databases" multiple="true" display="checkboxes" dynamic_options = "get_databases()" >
-                               <validator type="no_options" message="Select at least one database." />      
+                               <validator type="no_options" message="Select at least one database." />
                            </param>
                         </when>
                         <when value="file">
@@ -301,7 +317,7 @@
             <param name="annotate_compounds|condi|condi|source" value="databases"/>
             <param name="annotate_compounds|condi|condi|db_name" value="hmdb_full_v4_0_v1"/>
             <param name="annotate_compounds|condi|ppm" value="3.0"/>
-            
+
             <param name="summary|sr_mc" value="--single-row"/>
             <param name="summary|rt_convert" value="skip"/>
 
